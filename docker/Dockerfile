@@ -55,22 +55,25 @@ ENV PYTHONPATH=/usr/lib/python2.7/site-packages
 # Uncomment the following line if you would like to run all the dispatch unit tests and system tests. 
 RUN ctest -VV
 
+ENV TOMCAT_VERSION 8.0.36
+ENV HAWTIO_VERSION 1.4.65
+
 # Install Apache Tomcat
 WORKDIR /main
-ADD http://mirror.hosting90.cz/apache/tomcat/tomcat-8/v8.0.36/bin/apache-tomcat-8.0.36.zip apache-tomcat-8.0.36.zip
-RUN unzip apache-tomcat-8.0.36.zip && rm apache-tomcat-8.0.36.zip
+ADD http://mirror.hosting90.cz/apache/tomcat/tomcat-8/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.zip apache-tomcat-$TOMCAT_VERSION.zip
+RUN unzip apache-tomcat-$TOMCAT_VERSION.zip && rm apache-tomcat-$TOMCAT_VERSION.zip
 
 # Download prebuilt hawtio
-ADD https://oss.sonatype.org/content/repositories/public/io/hawt/hawtio-default/1.4.65/hawtio-default-1.4.65.war /main/apache-tomcat-8.0.35/webapps/hawtio.war
+ADD https://oss.sonatype.org/content/repositories/public/io/hawt/hawtio-default/$HAWTIO_VERSION/hawtio-default-$HAWTIO_VERSION.war /main/apache-tomcat-$TOMCAT_VERSION/webapps/hawtio.war
 
 # Build the hawtio console .war file
 WORKDIR /main/qpid-dispatch/console/hawtio
 RUN mvn clean install && rm -r ~/.m2
-RUN mv target/dispatch-hawtio-console-*.war /main/apache-tomcat-8.0.36/webapps/dispatch-plugin.war
+RUN mv target/dispatch-hawtio-console-*.war /main/apache-tomcat-$TOMCAT_VERSION/webapps/dispatch-plugin.war
 
-RUN chmod +x /main/apache-tomcat-8.0.36/bin/*.sh
+RUN chmod +x /main/apache-tomcat-$TOMCAT_VERSION/bin/*.sh
 
 WORKDIR /main/
 COPY console.conf ./
-RUN echo "websockify 5673 0.0.0.0:20009 & bash /main/apache-tomcat-8.0.36/bin/startup.sh && qdrouterd -c console.conf" > cmd.sh
+RUN echo "websockify 5673 0.0.0.0:20009 & bash /main/apache-tomcat-$TOMCAT_VERSION/bin/startup.sh && qdrouterd -c console.conf" > cmd.sh
 CMD ["bash", "cmd.sh"]
