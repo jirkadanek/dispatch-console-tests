@@ -35,25 +35,16 @@ class TestConnectPage(TestCase):
         return self
 
     @pytest.mark.nondestructive
-    @pytest.mark.broken(issue='DISPATCH-416')
+    @pytest.mark.fixed(issue='DISPATCH-416')
     def test_wrong_ip(self):
         self.test_name = 'test_wrong_ip'
         page = self.given_connect_page()
         page.connect_to('111222', None)
 
-        # first click displays incomplete message, ends with a colon
         page.connect_button.click()
         page.wait_for_frameworks()
 
-        self.then_error_message_says('There was a connection error:')
-        self.take_screenshot('10')
-
-        # second click prints complete message, somewhat redundant, too many colons
-
-        page.connect_button.click()
-        page.wait_for_frameworks()
-
-        self.then_error_message_says('There was a connection error: Error: Connection failed')
+        self.then_error_message_says('There was a connection error: Connection failed')
         self.take_screenshot('20')
 
         self.then_no_js_error()
@@ -71,10 +62,10 @@ class TestConnectPage(TestCase):
         try:
             # chrome
             self.then_toast_error_says(
-                "Error: Failed to construct 'WebSocket': The URL 'ws://127.0.0.1:112657' is invalid.")
+                "[Window] Uncaught SyntaxError: Failed to construct 'WebSocket': The URL 'ws://127.0.0.1:112657' is invalid. (http://10.0.2.2:8080/hawtio/dispatch_plugin:44:764)")
         except NoSuchElementException:
             # firefox
-            self.then_error_message_says("There was a connection error:")
+            self.then_error_message_says("There was a connection error: Connection failed")
         self.take_screenshot('10')
 
         if False:

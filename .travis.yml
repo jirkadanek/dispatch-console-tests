@@ -33,8 +33,8 @@ addons:
 
 # https://docs.travis-ci.com/user/docker/
 before_install:
-  - docker pull jdanekrh/dispatch-console:1-f1fb8c
-  - docker run -d -p 127.0.0.1:8080:8080 -p 127.0.0.1:5673:5673 jdanekrh/dispatch-console:1-f1fb8c
+  - docker pull jdanekrh/dispatch-console:2-db8521
+  - docker run -d -p 127.0.0.1:8080:8080 -p 127.0.0.1:5673:5673 jdanekrh/dispatch-console:2-db8521
   - docker ps -a
 
 install:
