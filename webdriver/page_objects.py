@@ -42,6 +42,12 @@ class ConnectPage(object):
         selenium.get(url)
         return ConnectPage(selenium)
 
+    @classmethod
+    def wait(cls, selenium: webdriver.Remote):
+        # wait for Connect link in the top bar to be active
+        locator = (By.CSS_SELECTOR, '.active a[ng-href="#/dispatch_plugin/connect"]')
+        WebDriverWait(selenium, 30).until(EC.presence_of_element_located(locator))
+
     def find_wait_clickable(self, by, value, root=None):
         locator = (by, value)
         element = WebDriverWait(self.selenium, 10).until(EC.element_to_be_clickable(locator))

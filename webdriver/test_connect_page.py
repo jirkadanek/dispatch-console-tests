@@ -54,6 +54,16 @@ class TestConnectPage(TestCase):
         return self
 
     @pytest.mark.nondestructive
+    @pytest.mark.verifies(issue='DISPATCH-433')
+    def test_redirect_to_connect_page(self):
+        bookmark = '{}/overview'.format(self.base_url)
+
+        self.selenium.get(bookmark)
+        ConnectPage.wait(self.selenium)
+        page = ConnectPage(self.selenium)  # check it is not just empty page with toolbar
+        self.then_no_js_error()
+
+    @pytest.mark.nondestructive
     @pytest.mark.verifies(issue='DISPATCH-416')
     def test_wrong_ip(self):
         self.test_name = 'test_wrong_ip'
@@ -94,6 +104,7 @@ class TestConnectPage(TestCase):
     @pytest.mark.parametrize("when_correct_details", [
         lambda self, page: self.when_correct_details(page),
         lambda self, page: page.connect_to(self.console_ip),
+        lambda self, page: page.connect_to(),
     ])
     def test_correct_details(self, when_correct_details):
         self.test_name = 'test_correct_details'
@@ -104,6 +115,7 @@ class TestConnectPage(TestCase):
         self.then_no_js_error()
 
     @pytest.mark.nondestructive
+    @pytest.mark.verifies(issue='DISPATCH-439')
     def test_submit_form_with_enter_key(self):
         self.test_name = 'test_submit_form_with_enter_key'
         page = self.given_connect_page()
