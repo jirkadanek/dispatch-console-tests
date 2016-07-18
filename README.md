@@ -52,21 +52,32 @@ On Travis, binding to `5672` is not possible.
 
 This folder contains Webdriver tests for Dispatch Console. Currently it is very early work.
 
+## py.test
+
+    @pytest.mark.nondestructive
+
+Only tests marked as "nondestructive" get run by default.
+
+    @pytest.mark.reproduces(issue='DISPATCH-428')    
+    @pytest.mark.verifies(issue='DISPATCH-428')
+    
+Current intention is that tests should never be failing, unless there is something wrong with tests themselves or with the CI setup. Tests marked with "reproduces" check for presence of incorrect behavior. When the issue is fixed, test is marked as "verifies" and rewritten to check for correct behavior.
+
 ## Random notes
 
 The `-s` switch is sometimes necessary, otherwise py.test suppresses test output (and displays it only for failed tests). The `-n` switch cancels the `-s` switch, apparently.
 
-Tests written in Python 3, because of convenient inline syntax for type annotations
+Tests written in Python 3, mainly because of convenient inline syntax for type annotations
 
-Currently only a standalone router is supported, because Dockerfile doesn't expose ports for connecting more routers and I have to yet learn about Docker networking.
+Currently only a standalone router is supported, because Dockerfile doesn't expose ports for connecting more routers and I have yet to learn about Docker networking.
 
-These tests should focus on the console, assuming that OS level differences are caught by other tests for `qdstat`/`qdmanage` and router, these tests can run with the docker image and do not worry about OS on the server. Only OS on clients will be unrolled in the test matrix.
+These tests should focus on the console, assuming that OS level differences are caught by other tests for `qdstat`/`qdmanage` and router. These tests can run with the docker image and do not worry about OS on the server. Only OS on clients will be unrolled in the test matrix.
 
 Splitting dispatch container and console/tomcat container might be valuable. Tests will need to restart qdrouterd if they make changes and don't roll them back. 
  Current solution, always undo changes. Ansible cannot be used from Python 3.
 
 ## Cache problems in Firefox
 
-In real deployment, people using Firefox may encounter the issue that cached content sticks around in the cache even after dispatch-plugin gets updated. The console then breaks in unexpected ways or does not display alltogether. Solution either set cache expiration, or content addressing in urls (file hash or version is part of url). In documentation, recommend clearing the cache in case of problems.
+In real deployment, people using Firefox may encounter the issue that cached content sticks around in the cache even after dispatch-plugin gets updated. The console then breaks in unexpected ways or does not display altogether. Solution either set cache expiration, or content addressing in urls (file hash or version is part of url). In documentation, recommend clearing the cache in case of problems.
 
 

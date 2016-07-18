@@ -1,3 +1,22 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
 import os.path
 import pytest
 import time
@@ -35,7 +54,7 @@ class TestConnectPage(TestCase):
         return self
 
     @pytest.mark.nondestructive
-    @pytest.mark.fixed(issue='DISPATCH-416')
+    @pytest.mark.verifies(issue='DISPATCH-416')
     def test_wrong_ip(self):
         self.test_name = 'test_wrong_ip'
         page = self.given_connect_page()
@@ -50,26 +69,26 @@ class TestConnectPage(TestCase):
         self.then_no_js_error()
 
     @pytest.mark.nondestructive
-    @pytest.mark.broken(issue='DISPATCH-428')
+    @pytest.mark.verifies(issue='DISPATCH-428')
     def test_wrong_port(self):
         self.test_name = 'test_wrong_port'
+
+        invalid_port = '0'
+        closed_port = '11265'
+
         page = self.given_connect_page()
-        page.connect_to('127.0.0.1', '112657')
+
+        page.connect_to('127.0.0.1', invalid_port)
+        page.wait_for_frameworks()
+        assert not page.connect_button.is_enabled()
+
+        page.connect_to('127.0.0.1', closed_port)
         page.connect_button.click()
         page.wait_for_frameworks()
-
-        # TODO: different behavior in chrome and firefox
-        try:
-            # chrome
-            self.then_toast_error_says(
-                "[Window] Uncaught SyntaxError: Failed to construct 'WebSocket': The URL 'ws://127.0.0.1:112657' is invalid. (http://10.0.2.2:8080/hawtio/dispatch_plugin:44:764)")
-        except NoSuchElementException:
-            # firefox
-            self.then_error_message_says("There was a connection error: Connection failed")
+        self.then_error_message_says("There was a connection error: Connection failed")
         self.take_screenshot('10')
 
-        if False:
-            self.then_no_js_error()
+        self.then_no_js_error()
 
     @pytest.mark.nondestructive
     @pytest.mark.parametrize("when_correct_details", [
