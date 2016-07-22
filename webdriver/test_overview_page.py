@@ -59,20 +59,15 @@ class TestOverviewPage(TestCase):
                 continue
             expander.click()
 
-        time.sleep(5)
-
+        page.wait_for_frameworks()
+        # all dynatree nodes should be expanded
         assert all(self.is_expanded(e.find_element(By.XPATH, './..')) for e in self.expanders)
-
         self.take_screenshot("10")
-
         self.when_navigate_to_entities_page_and_back(page)
 
-        # BUG: now all should be still expanded, but only one is
+        # BUG: now all dynatree nodes should be still expanded, but only one is
         assert [self.is_expanded(e.find_element(By.XPATH, './..')) for e in self.expanders].count(True) == 1
-
         self.take_screenshot("20")
-
-        # time.sleep(30)
 
     def is_expanded(self, node: WebElement):
         return 'dynatree-expanded' in node.get_attribute('class')
@@ -87,9 +82,9 @@ class TestOverviewPage(TestCase):
 
     def when_navigate_to_entities_page_and_back(self, page):
         page.entities_tab.click()
-        time.sleep(5)
+        page.wait_for_frameworks()
         page.overview_tab.click()
-        time.sleep(5)
+        page.wait_for_frameworks()
 
     @property
     def expanders(self):
