@@ -1,0 +1,2 @@
+install:
+- choco install firefox -version 49.0.1
