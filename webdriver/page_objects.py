@@ -20,6 +20,7 @@
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -134,8 +135,21 @@ try {
 
 
 class OverviewPage(object):
+    def __init__(self, selenium: webdriver.Remote):
+        self.selenium = selenium
+
     @classmethod
     def wait(cls, selenium: webdriver.Remote):
         # wait for Overview link in the top bar to be active
         locator = (By.CSS_SELECTOR, '.active a[ng-href="#/dispatch_plugin/overview"]')
         WebDriverWait(selenium, 30).until(EC.presence_of_element_located(locator))
+
+    @property
+    def entities_tab(self) -> WebElement:
+        locator = (By.CSS_SELECTOR, 'a[ng-href="#/dispatch_plugin/list"]')
+        return WebDriverWait(self.selenium, 10).until(EC.presence_of_element_located(locator))
+
+    @property
+    def overview_tab(self) -> WebElement:
+        locator = (By.CSS_SELECTOR, 'a[ng-href="#/dispatch_plugin/overview"]')
+        return WebDriverWait(self.selenium, 10).until(EC.presence_of_element_located(locator))
