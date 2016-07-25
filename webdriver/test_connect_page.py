@@ -149,6 +149,10 @@ class TestConnectPage(TestCase):
         assert error.is_displayed()
 
     def then_no_js_error(self):
+        # fetching browser logs is not supported on IE
+        # http://stackoverflow.com/questions/27796950/how-to-get-the-browser-console-logs-of-internet-explorer-using-python-selenium
+        if self.selenium.capabilities['browserName'].lower() == "internet explorer":
+            return
         log = self.selenium.get_log('browser')
         for entry in log:
             message = entry['message']

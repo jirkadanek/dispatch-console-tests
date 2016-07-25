@@ -78,6 +78,7 @@ class TestOverviewPage(TestCase):
         connect.connect_to(self.console_ip)
         connect.connect_button.click()
         overview = OverviewPage(self.selenium)  # .open(self.base_url, self.console_ip, self.selenium)
+        overview.wait_for_frameworks()
         return overview
 
     def when_navigate_to_entities_page_and_back(self, page):
