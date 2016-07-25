@@ -22,4 +22,14 @@
 # run this from the repo root
 
 pushd webdriver
-py.test -s --driver Firefox --base-url http://127.0.0.1:8080/hawtio --verify-base-url
+
+if [ ${SELENIUM_SERVER} == "local" ]; then
+    py.test -s --driver Firefox --base-url http://127.0.0.1:8080/hawtio --verify-base-url
+else
+    py.test -s --driver SauceLabs \
+     --capability browserName "internet explorer" \
+     --capability platform "Windows 8" \
+     --capability version "10.0" \
+     --capability tunnel-identifier ${TRAVIS_JOB_NUMBER} \
+     --base-url http://127.0.0.1:8080/hawtio --verify-base-url
+fi

@@ -26,10 +26,24 @@ dist: trusty
 services:
   - docker
 
-# https://docs.travis-ci.com/user/firefox/
-# https://muffinresearch.co.uk/using-the-latest-version-of-firefox-in-travis-ci/
 addons:
+  # https://docs.travis-ci.com/user/firefox/
+  # https://muffinresearch.co.uk/using-the-latest-version-of-firefox-in-travis-ci/
   firefox: latest
+  # https://docs.travis-ci.com/user/sauce-connect/
+  sauce_connect:
+    username: "jdanekrh"
+    access_key:
+      secure: "dRLcC1JYrl0tnwIKBqPixuR9pbpGdJJB7oDzj1dr56FfXuu8+JTyy+Tvsz7OBE7EDreuxOPV5Yd5v/+DF+iw9+1QHTjenfFD0Qj79cm+8tyjESBeKuD11SCEyKMksySbF3RShOdsof3W08uPg/Jlowxel1VtUWRVY54Ht8svLg/aigVtM1Px1XME1kIXav1n6nQvUsdA8nnCfqagh6ctGQcmjBVJqskYPl8jyMuovFKnnZ8hCpq5vMMxIhsahdEzwvU1RI20Sci9Fc7B2ux6jFX0JqYR7t/HrskMVNS4lBcH/JHVb+7L96W1bUXgTb1xrZyKdgyE+PM1Lcx7jxV23wU5x4K7Sl6olIwE9qXJDXW3e4tsxjeR+PFU/duiq85ezgTimsZGNISGSaNenYI+PMTeLjfDdgw19eT8X8j26pAnQ5K/pydsNahlwpXRoF2iz4x5WOgNGjHnhuDOUR376S0DbV1GGnq7d5Yzu2JH5VjnaXSbY8kD42i1Uxfiod/4YtSqmDJGdH4Nha0DLVE5gYgXhRs3qPndf6Prw6lKTZ/Q0Awj19HVXEX4M1Ht4kfLojUAPCpclcK4fIWW73mzfyfNBQutDaw+H4NHE4AzrOHNdVOGH94q6RYa8rmKMKtBksF7kMfbBg2IC/jZb2vLhb/4ys48Ceno8Uxd8ETDMX4="
+
+# https://github.com/travis-ci/travis-web/blob/15dc5ff92184db7044f0ce3aa451e57aea58ee19/.travis.yml
+env:
+  global:
+    - "SAUCELABS_USERNAME=jdanekrh"
+    - secure: lkyhDfP1TvTmAy9eu5gRtyCJZoOeVmsfNByCHeR/POMWsBoh4Ad7zIaMGNYtXIU+7YDxeOnVIwm6dheR1mOu3eVMrCpPhS8wkP4SVeA8/tn+tQd4SB1YAmrDGnhKOVtSNTJLsC4/CSabKnUyN+he75vuzdVmvpWFmItZ3dbl2rc9UVO8WoqasgW/YJejJu5dHZ3RjvUfyROaTMgp4HXjR0WtsHhZDiA7qEvboC9P8tWZ83V2qUr3JThGRwkgpTYLMa1QplcafLjWzsOgZ2HNP/FjqEcYnT0C8LgaVkhZ3LtvTZRML7BPFYmWz1Y6nHj3ra2CJv6PCjTyTyB9McKu29vjo7wQgdUC9wqDWVdXb8oKx0wC4DkNRIXbY2MN786G4IbUq2bWOh5FCJ2yjRlt/sid3E4NyC9U6Jsq0ywqU2PZDrXyWcjHFG90XsUMcwVkTQkdMPQcOz7A6HQ5OgioteB4chrJYWb969CCJZfRrA39EQ5uP1JdF4o/pV4jfDAVbnDvkJPxHCmS5Q42qQxlE5cfpDpRIZkJ87VgTx2yqlL0LD+xcVcDViURk85OYoH5qclJ+IqHe4qhxh8IkSNej4nbrQ5ykcitu+LoN9mAXBdCXMnqO0vONVAP+pA4FTGVSqx3B+ZqGwTxanJnahQn1YZpmfGAe9P7FP2UzyvmOBg=
+  matrix:
+    - "SELENIUM_SERVER=local"
+    - "SELENIUM_SERVER=saucelabs BROWSER='firefox:19:Windows 2012'"
 
 # https://docs.travis-ci.com/user/docker/
 before_install:
