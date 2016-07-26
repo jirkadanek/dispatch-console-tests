@@ -1,5 +1,7 @@
 # dispatch-console-tests
 [![Build Status](https://travis-ci.org/jdanekrh/dispatch-console-tests.svg?branch=master)](https://travis-ci.org/jdanekrh/dispatch-console-tests)
+[![Documentation Status](https://readthedocs.org/projects/dispatch-console-tests/badge/?version=latest)](http://dispatch-console-tests.readthedocs.io/en/latest/?badge=latest)
+
 Tests for https://github.com/apache/qpid-dispatch/tree/master/console
 
 ## Overview
@@ -7,8 +9,6 @@ Tests for https://github.com/apache/qpid-dispatch/tree/master/console
 This repository holds end-to-end Webdriver (Selenium 2) tests for dispatch-console.
 
 The console is a Web management tool for Qpid Dispatch Router. It is implemented as a Hawt.io plugin. It displays information about a qpid dispatch router and allows performing administrative commands. Its capabilities are similar to CLI tools `qdstat` and `qdmanage`, except it is a Web page and it can do charts and visualizations. (https://qpid.apache.org/releases/qpid-dispatch-0.6.0/book/console.html)
-
-# README is a work-in-progress. The instructions are how it should work, not how it works right now
 
 ## Running
 
@@ -24,7 +24,7 @@ alternatively, run the tests remotely with something like
 
 You may need to run selenium-server with the following switch
 
-    java -jar ... -Djava.net.preferIPv4Stack=true
+    java -Djava.net.preferIPv4Stack=true -jar ... 
 
 ## Docker
 
@@ -75,6 +75,8 @@ These tests should focus on the console, assuming that OS level differences are 
 
 Splitting dispatch container and console/tomcat container might be valuable. Tests will need to restart qdrouterd if they make changes and don't roll them back. 
  Current solution, always undo changes. Ansible cannot be used from Python 3.
+
+Issue tracker on GitHub can be useful as a public todo list just for me. If I enter something there, nobody is going to be running Jira queries over it, chase me about assigning it to sprints and so on.
 
 ## Cache problems in Firefox
 

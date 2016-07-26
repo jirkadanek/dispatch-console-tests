@@ -20,32 +20,18 @@
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-class ConnectPage(object):
+class PageObject(object):
     def __init__(self, selenium: webdriver.Remote):
         self.selenium = selenium
-        self.wait_for_frameworks()
 
-        self.host = self.selenium.find_element(By.NAME, 'address')
-
-        # without waiting, got TypeError - undefined is not a function (evaluating '_getTagName(currWindow).toLowerCase()')
-        self.port = self.selenium.find_element(By.NAME, 'port')
-
-        self.connect_button = self.selenium.find_element(By.CSS_SELECTOR, '#dispatch-login-container button')
-
-    @classmethod
-    def open(cls, base_url, selenium):
-        url = base_url + '/dispatch_plugin'
-        selenium.get(url)
-        return ConnectPage(selenium)
-
-    def find_wait_clickable(self, by, value, root=None):
-        locator = (by, value)
-        element = WebDriverWait(self.selenium, 10).until(EC.element_to_be_clickable(locator))
-        return element
+    def locate_element(self, locator) -> WebElement:
+        timeout = 10
+        return WebDriverWait(self.selenium, timeout).until(EC.presence_of_element_located(locator))
 
     def wait_for_frameworks(self):
         """Checks whether the UI frameworks are changing the UI
@@ -99,8 +85,9 @@ try {
 """
         self.wait_for(lambda: self.selenium.execute_script(script))
 
-    def wait_for(self, condition):
-        limit = 10
+    @staticmethod
+    def wait_for(condition):
+        timeout = 10
         t = 0
         d = 0.3
         while True:
@@ -108,10 +95,40 @@ try {
             if result:
                 # print('waited for', t)
                 return
-            if t > limit:
-                assert t < limit
+            if t > timeout:
+                assert t < timeout
             time.sleep(d)
             t += d
+
+
+class ConnectPage(PageObject):
+    def __init__(self, selenium: webdriver.Remote):
+        super().__init__(selenium)
+        self.wait_for_frameworks()
+
+        self.host = self.selenium.find_element(By.NAME, 'address')
+
+        # without waiting, got TypeError - undefined is not a function (evaluating '_getTagName(currWindow).toLowerCase()')
+        self.port = self.selenium.find_element(By.NAME, 'port')
+
+        self.connect_button = self.selenium.find_element(By.CSS_SELECTOR, '#dispatch-login-container button')
+
+    @classmethod
+    def open(cls, base_url, selenium):
+        url = base_url + '/dispatch_plugin'
+        selenium.get(url)
+        return ConnectPage(selenium)
+
+    @classmethod
+    def wait(cls, selenium: webdriver.Remote):
+        # wait for Connect link in the top bar to be active
+        locator = (By.CSS_SELECTOR, '.active a[ng-href="#/dispatch_plugin/connect"]')
+        WebDriverWait(selenium, 30).until(EC.presence_of_element_located(locator))
+
+    def find_wait_clickable(self, by, value, root=None):
+        locator = (by, value)
+        element = WebDriverWait(self.selenium, 10).until(EC.element_to_be_clickable(locator))
+        return element
 
     def initialize(self):
         self.host = self.selenium.find_element(By.ID, '')
@@ -127,9 +144,22 @@ try {
             self.port.send_keys(port)
 
 
-class OverviewPage(object):
+class OverviewPage(PageObject):
+    def __init__(self, selenium: webdriver.Remote):
+        super().__init__(selenium)
+
     @classmethod
     def wait(cls, selenium: webdriver.Remote):
         # wait for Overview link in the top bar to be active
         locator = (By.CSS_SELECTOR, '.active a[ng-href="#/dispatch_plugin/overview"]')
         WebDriverWait(selenium, 30).until(EC.presence_of_element_located(locator))
+
+    @property
+    def entities_tab(self) -> WebElement:
+        locator = (By.CSS_SELECTOR, 'a[ng-href="#/dispatch_plugin/list"]')
+        return WebDriverWait(self.selenium, 10).until(EC.presence_of_element_located(locator))
+
+    @property
+    def overview_tab(self) -> WebElement:
+        locator = (By.CSS_SELECTOR, 'a[ng-href="#/dispatch_plugin/overview"]')
+        return self.locate_element(locator)
