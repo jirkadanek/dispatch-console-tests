@@ -29,7 +29,7 @@ class PageObject(object):
     def __init__(self, selenium: webdriver.Remote):
         self.selenium = selenium
 
-    def locate_element(self, locator) -> WebElement:
+    def wait_locate_visible_element(self, locator) -> WebElement:
         timeout = 10
         return WebDriverWait(self.selenium, timeout).until(EC.presence_of_element_located(locator))
 
@@ -40,6 +40,7 @@ class PageObject(object):
 
         http://stackoverflow.com/questions/25062969/testing-angularjs-with-selenium
         """
+        # self.wait_for_jquery()
         script = """
 try {
   if (document.readyState !== 'complete') {
@@ -84,6 +85,7 @@ try {
 }
 """
         self.wait_for(lambda: self.selenium.execute_script(script))
+        self.wait_for_angular()
 
     @staticmethod
     def wait_for(condition):
@@ -100,17 +102,22 @@ try {
             time.sleep(d)
             t += d
 
+    def wait_for_angular(self):
+        # waitForAngular()
+        # https://github.com/angular/protractor/blob/71532f055c720b533fbf9dab2b3100b657966da6/lib/clientsidescripts.js#L51
+        self.selenium.set_script_timeout(10)
+        self.selenium.execute_async_script("""
+        callback = arguments[arguments.length - 1];
+        angular.element('html').injector().get('$browser').notifyWhenNoOutstandingRequests(callback);""")
+
 
 class ConnectPage(PageObject):
     def __init__(self, selenium: webdriver.Remote):
         super().__init__(selenium)
         self.wait_for_frameworks()
 
-        self.host = self.selenium.find_element(By.NAME, 'address')
-
-        # without waiting, got TypeError - undefined is not a function (evaluating '_getTagName(currWindow).toLowerCase()')
-        self.port = self.selenium.find_element(By.NAME, 'port')
-
+        self.host = self.wait_locate_visible_element((By.NAME, 'address'))
+        self.port = self.wait_locate_visible_element((By.NAME, 'port'))
         self.connect_button = self.selenium.find_element(By.CSS_SELECTOR, '#dispatch-login-container button')
 
     @classmethod
@@ -137,9 +144,9 @@ class ConnectPage(PageObject):
 
     def connect_to(self, host=None, port=None):
         self.host.clear()
-        self.port.clear()
         if host is not None:
             self.host.send_keys(host)
+        self.port.clear()
         if port is not None:
             self.port.send_keys(port)
 
@@ -152,14 +159,14 @@ class OverviewPage(PageObject):
     def wait(cls, selenium: webdriver.Remote):
         # wait for Overview link in the top bar to be active
         locator = (By.CSS_SELECTOR, '.active a[ng-href="#/dispatch_plugin/overview"]')
-        WebDriverWait(selenium, 30).until(EC.presence_of_element_located(locator))
+        WebDriverWait(selenium, 30).until(EC.visibility_of_element_located(locator))
 
     @property
     def entities_tab(self) -> WebElement:
         locator = (By.CSS_SELECTOR, 'a[ng-href="#/dispatch_plugin/list"]')
-        return WebDriverWait(self.selenium, 10).until(EC.presence_of_element_located(locator))
+        return self.wait_locate_visible_element(locator)
 
     @property
     def overview_tab(self) -> WebElement:
         locator = (By.CSS_SELECTOR, 'a[ng-href="#/dispatch_plugin/overview"]')
-        return self.locate_element(locator)
+        return self.wait_locate_visible_element(locator)
