@@ -73,11 +73,11 @@ class TestOverviewPage(TestCase):
         return 'dynatree-expanded' in node.get_attribute('class')
 
     def given_overview_page(self):
-        # TODO: do not start session here?
         connect = ConnectPage.open(self.base_url, self.selenium)
         connect.connect_to(self.console_ip)
         connect.connect_button.click()
-        overview = OverviewPage(self.selenium)  # .open(self.base_url, self.console_ip, self.selenium)
+        OverviewPage.wait(self.selenium)
+        overview = OverviewPage(self.selenium)
         overview.wait_for_frameworks()
         return overview
 

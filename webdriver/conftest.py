@@ -29,8 +29,6 @@ def pytest_addoption(parser):
 
 @pytest.fixture
 def selenium(selenium: webdriver.Remote):
-    selenium.implicitly_wait(10)
-    # selenium.set_window_size(1920, 1080)
     return selenium
 
 
