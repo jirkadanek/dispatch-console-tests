@@ -40,6 +40,7 @@ class PageObject(object):
 
         http://stackoverflow.com/questions/25062969/testing-angularjs-with-selenium
         """
+        # self.wait_for_jquery()
         script = """
 try {
   if (document.readyState !== 'complete') {
@@ -84,6 +85,7 @@ try {
 }
 """
         self.wait_for(lambda: self.selenium.execute_script(script))
+        self.wait_for_angular()
 
     @staticmethod
     def wait_for(condition):
@@ -99,6 +101,14 @@ try {
                 assert t < timeout
             time.sleep(d)
             t += d
+
+    def wait_for_angular(self):
+        # waitForAngular()
+        # https://github.com/angular/protractor/blob/71532f055c720b533fbf9dab2b3100b657966da6/lib/clientsidescripts.js#L51
+        self.selenium.set_script_timeout(10)
+        self.selenium.execute_async_script("""
+        callback = arguments[arguments.length - 1];
+        angular.element('html').injector().get('$browser').notifyWhenNoOutstandingRequests(callback);""")
 
 
 class ConnectPage(PageObject):
