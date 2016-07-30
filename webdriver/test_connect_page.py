@@ -27,7 +27,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from .page_objects import ConnectPage, OverviewPage
+from .page_objects import PLUGIN_NAME, ConnectPage, OverviewPage
 
 
 class TestCase(object):
@@ -43,6 +43,16 @@ class TestCase(object):
         filename = '{}__{}.png'.format(self.test_name, name)
         self.selenium.get_screenshot_as_file(os.path.abspath(filename))
 
+    def then_no_js_error(self):
+        # fetching browser logs is not supported on IE
+        # http://stackoverflow.com/questions/27796950/how-to-get-the-browser-console-logs-of-internet-explorer-using-python-selenium
+        if self.selenium.capabilities['browserName'].lower() == "internet explorer":
+            return
+        log = self.selenium.get_log('browser')
+        for entry in log:
+            message = entry['message']
+            assert 'Stack trace:' not in message
+
 
 class TestConnectPage(TestCase):
     @pytest.fixture(autouse=True)
@@ -54,14 +64,40 @@ class TestConnectPage(TestCase):
         return self
 
     @pytest.mark.nondestructive
+    # @pytest.mark.reproduces(issue='')
+    def test_open_connect_page(self):
+        self.test_name = 'test_open_connect_page'
+        self.do_test_open_connect_page()
+
+        # BUG: the connect button in the bar is not highlighted
+        with pytest.raises(TimeoutException):
+            ConnectPage.wait(self.selenium)
+        self.take_screenshot("10")
+
+        if self.selenium.capabilities['browserName'] == 'firefox':
+            # BUG: when reloaded, the page is empty below the bar
+            with pytest.raises(TimeoutException):
+                self.do_test_open_connect_page()
+        else:
+            self.do_test_open_connect_page()
+        self.take_screenshot("20")
+
+    def do_test_open_connect_page(self):
+        connect = ConnectPage.open(self.base_url, self.selenium)
+        connect.wait_for_frameworks()
+        return connect
+
+    @pytest.mark.nondestructive
     @pytest.mark.verifies(issue='DISPATCH-433')
     def test_redirect_to_connect_page(self):
-        bookmark = '{}/overview'.format(self.base_url)
+        self.test_name = 'test_redirect_to_connect_page'
+        bookmark = '{}/{}/overview'.format(self.base_url, PLUGIN_NAME)
 
         self.selenium.get(bookmark)
         ConnectPage.wait(self.selenium)
         page = ConnectPage(self.selenium)  # check it is not just empty page with toolbar
         self.then_no_js_error()
+        self.take_screenshot("10")
 
     @pytest.mark.nondestructive
     @pytest.mark.verifies(issue='DISPATCH-416')
@@ -73,7 +109,7 @@ class TestConnectPage(TestCase):
         page.connect_button.click()
         page.wait_for_frameworks()
 
-        self.then_error_message_says('There was a connection error: Connection failed')
+        self.then_error_message_says('There was a connection error: Unable to connect')
         self.take_screenshot('20')
 
         self.then_no_js_error()
@@ -95,7 +131,7 @@ class TestConnectPage(TestCase):
         page.connect_to('127.0.0.1', closed_port)
         page.connect_button.click()
         page.wait_for_frameworks()
-        self.then_error_message_says("There was a connection error: Connection failed")
+        self.then_error_message_says("There was a connection error: Unable to connect")
         self.take_screenshot('10')
 
         self.then_no_js_error()
@@ -147,14 +183,4 @@ class TestConnectPage(TestCase):
         error = self.selenium.find_element(By.CSS_SELECTOR, '.toast-error .toast-message')
         assert error.text == message
         assert error.is_displayed()
-
-    def then_no_js_error(self):
-        # fetching browser logs is not supported on IE
-        # http://stackoverflow.com/questions/27796950/how-to-get-the-browser-console-logs-of-internet-explorer-using-python-selenium
-        if self.selenium.capabilities['browserName'].lower() == "internet explorer":
-            return
-        log = self.selenium.get_log('browser')
-        for entry in log:
-            message = entry['message']
-            assert 'Stack trace:' not in message
 
