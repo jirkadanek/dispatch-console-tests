@@ -25,6 +25,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
+PLUGIN_NAME = 'dispatch_hawtio_console'
+
+
 class PageObject(object):
     def __init__(self, selenium: webdriver.Remote):
         self.selenium = selenium
@@ -40,7 +43,6 @@ class PageObject(object):
 
         http://stackoverflow.com/questions/25062969/testing-angularjs-with-selenium
         """
-        # self.wait_for_jquery()
         script = """
 try {
   if (document.readyState !== 'complete') {
@@ -122,14 +124,14 @@ class ConnectPage(PageObject):
 
     @classmethod
     def open(cls, base_url, selenium):
-        url = base_url + '/dispatch_plugin'
+        url = base_url + '/{}'.format(PLUGIN_NAME)
         selenium.get(url)
         return ConnectPage(selenium)
 
     @classmethod
     def wait(cls, selenium: webdriver.Remote):
         # wait for Connect link in the top bar to be active
-        locator = (By.CSS_SELECTOR, '.active a[ng-href="#/dispatch_plugin/connect"]')
+        locator = (By.CSS_SELECTOR, '.active a[ng-href="#/{}/connect"]'.format(PLUGIN_NAME))
         WebDriverWait(selenium, 30).until(EC.presence_of_element_located(locator))
 
     def find_wait_clickable(self, by, value, root=None):
@@ -158,15 +160,15 @@ class OverviewPage(PageObject):
     @classmethod
     def wait(cls, selenium: webdriver.Remote):
         # wait for Overview link in the top bar to be active
-        locator = (By.CSS_SELECTOR, '.active a[ng-href="#/dispatch_plugin/overview"]')
-        WebDriverWait(selenium, 30).until(EC.visibility_of_element_located(locator))
+        locator = (By.CSS_SELECTOR, '.active a[ng-href="#/{}/overview"]'.format(PLUGIN_NAME))
+        WebDriverWait(selenium, 30).until(EC.presence_of_element_located(locator))
 
     @property
     def entities_tab(self) -> WebElement:
-        locator = (By.CSS_SELECTOR, 'a[ng-href="#/dispatch_plugin/list"]')
+        locator = (By.CSS_SELECTOR, 'a[ng-href="#/{}/list"]'.format(PLUGIN_NAME))
         return self.wait_locate_visible_element(locator)
 
     @property
     def overview_tab(self) -> WebElement:
-        locator = (By.CSS_SELECTOR, 'a[ng-href="#/dispatch_plugin/overview"]')
+        locator = (By.CSS_SELECTOR, 'a[ng-href="#/{}/overview"]'.format(PLUGIN_NAME))
         return self.wait_locate_visible_element(locator)

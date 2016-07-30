@@ -22,7 +22,6 @@ from selenium import webdriver
 
 
 def pytest_addoption(parser):
-    print("adding option")
     parser.addoption("--console-ip", action="store", default="127.0.0.1",
                      help="IP for connecting to the console")
 
