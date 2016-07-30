@@ -23,7 +23,8 @@
 #   * FROM value
 #   * MAINTAINER value
 #   * apt-get install pkg-config
-#   * builds and runs hawt.io console
+#   * cleaned up packages, like ruby, emacs, ...
+#   * builds hawt.io console
 #
 # Notes:
 #   * python-pkg-resources is not in websockify dependencies but is required
@@ -32,8 +33,25 @@
 FROM debian:stable
 MAINTAINER "jdanek@redhat.com"
 
-# Install all the required packages. Some in this list were picked off from proton's INSTALL.md (https://github.com/apache/qpid-proton/blob/master/INSTALL.md) and the rest are from dispatch (https://github.com/apache/qpid-dispatch/blob/master/README)
-RUN apt-get update && apt-get -y install --fix-missing gcc cmake cmake-curses-gui uuid-dev libssl-dev libsasl2-2 libsasl2-dev sasl2-bin swig python-dev ruby-dev libperl-dev git make doxygen valgrind emacs openjdk-7-jdk pkg-config python-pkg-resources maven unzip websockify && rm -rf /var/lib/apt/lists/*
+# Install all the required packages. Some in this list were picked off from
+# proton's INSTALL.md (https://github.com/apache/qpid-proton/blob/master/INSTALL.md) and the
+# rest are from dispatch (https://github.com/apache/qpid-dispatch/blob/master/README)
+RUN apt-get update && apt-get -y install \
+    cmake \
+    gcc \
+    checkinstall \
+    git \
+    uuid-dev \
+    libssl-dev \
+    libsasl2-2 \
+    libsasl2-dev \
+    make \
+    pkg-config \
+    python-dev \
+    sasl2-bin \
+    swig \
+    valgrind \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Create a main directory and clone the qpid-proton repo from github
 RUN mkdir /main && cd /main && git clone https://github.com/apache/qpid-proton.git && cd /main/qpid-proton && mkdir /main/qpid-proton/build
@@ -41,13 +59,13 @@ RUN mkdir /main && cd /main && git clone https://github.com/apache/qpid-proton.g
 WORKDIR /main/qpid-proton/build
 
 # make and install proton
-RUN cmake .. -DSYSINSTALL_BINDINGS=ON -DCMAKE_INSTALL_PREFIX=/usr -DSYSINSTALL_PYTHON=ON && make install
+RUN cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DSYSINSTALL_BINDINGS=ON -DBUILD_CPP=OFF -DBUILD_JAVA=OFF -DBUILD_PERL=OFF -DSYSINSTALL_PYTHON=ON && make && checkinstall -y --pkgname qpid-proton
 
 # Clone the qpid-dispatch git repo
 RUN cd /main && git clone https://github.com/apache/qpid-dispatch.git && mkdir /main/qpid-dispatch/build
 
 WORKDIR /main/qpid-dispatch/build
-RUN cmake .. -DCMAKE_INSTALL_PREFIX=/usr && make install
+RUN cmake .. -DCMAKE_INSTALL_PREFIX=/usr && make && checkinstall -y --pkgname qpid-dispatch
 
 # Add site-packages to the PYTHONPATH environment variable. This is because Ubuntu does not list the site-packages folder in the sys.path 
 ENV PYTHONPATH=/usr/lib/python2.7/site-packages
@@ -55,25 +73,14 @@ ENV PYTHONPATH=/usr/lib/python2.7/site-packages
 # Uncomment the following line if you would like to run all the dispatch unit tests and system tests. 
 RUN ctest -VV
 
-ENV TOMCAT_VERSION 8.0.36
-ENV HAWTIO_VERSION 1.4.65
-
-# Install Apache Tomcat
-WORKDIR /main
-ADD http://mirror.hosting90.cz/apache/tomcat/tomcat-8/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.zip apache-tomcat-$TOMCAT_VERSION.zip
-RUN unzip apache-tomcat-$TOMCAT_VERSION.zip && rm apache-tomcat-$TOMCAT_VERSION.zip
-
-# Download prebuilt hawtio
-ADD https://oss.sonatype.org/content/repositories/public/io/hawt/hawtio-default/$HAWTIO_VERSION/hawtio-default-$HAWTIO_VERSION.war /main/apache-tomcat-$TOMCAT_VERSION/webapps/hawtio.war
-
 # Build the hawtio console .war file
+RUN apt-get update && apt-get -y install \
+    openjdk-7-jdk \
+    maven \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /main/qpid-dispatch/console/hawtio
 RUN mvn clean install && rm -r ~/.m2
-RUN mv target/dispatch-hawtio-console-*.war /main/apache-tomcat-$TOMCAT_VERSION/webapps/dispatch-plugin.war
-
-RUN chmod +x /main/apache-tomcat-$TOMCAT_VERSION/bin/*.sh
 
 WORKDIR /main/
-COPY console.conf ./
-RUN echo "websockify 5673 0.0.0.0:20009 & bash /main/apache-tomcat-$TOMCAT_VERSION/bin/startup.sh && qdrouterd -c console.conf" > cmd.sh
-CMD ["bash", "cmd.sh"]
+CMD cp -R /main/ /console && cp -R /main/ /router
