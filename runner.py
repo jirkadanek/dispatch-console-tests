@@ -38,6 +38,7 @@ import traceback
 from selenium import webdriver
 from IPython.core.debugger import Tracer
 
+import webdriver.page_objects as page_objects
 import webdriver.test_connect_page as test_connect_page
 import webdriver.test_overview_page as test_overview_page
 
@@ -80,7 +81,7 @@ def initialize_remote_selenium():
 
 
 def deinitialize_selenium(driver: webdriver.Remote):
-    driver.quit()
+    driver.close()
 
 
 def reload_test(selenium):
@@ -91,6 +92,7 @@ def reload_test(selenium):
     base_url = BASE_URL
     console_ip = CONSOLE_IP
 
+    importlib.reload(page_objects)
     importlib.reload(test_connect_page)
     importlib.reload(test_overview_page)
 
