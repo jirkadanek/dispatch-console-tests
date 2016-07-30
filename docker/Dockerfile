@@ -41,9 +41,7 @@ RUN apt-get update && apt-get -y install \
     gcc \
     checkinstall \
     git \
-    uuid-dev \
     libssl-dev \
-    libsasl2-2 \
     libsasl2-dev \
     make \
     pkg-config \
@@ -57,8 +55,6 @@ RUN apt-get update && apt-get -y install \
 RUN mkdir /main && cd /main && git clone https://github.com/apache/qpid-proton.git && cd /main/qpid-proton && mkdir /main/qpid-proton/build
 
 WORKDIR /main/qpid-proton/build
-
-# make and install proton
 RUN cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DSYSINSTALL_BINDINGS=ON -DBUILD_CPP=OFF -DBUILD_JAVA=OFF -DBUILD_PERL=OFF -DSYSINSTALL_PYTHON=ON && make && checkinstall -y --pkgname qpid-proton
 
 # Clone the qpid-dispatch git repo
@@ -67,7 +63,7 @@ RUN cd /main && git clone https://github.com/apache/qpid-dispatch.git && mkdir /
 WORKDIR /main/qpid-dispatch/build
 RUN cmake .. -DCMAKE_INSTALL_PREFIX=/usr && make && checkinstall -y --pkgname qpid-dispatch
 
-# Add site-packages to the PYTHONPATH environment variable. This is because Ubuntu does not list the site-packages folder in the sys.path 
+# Add site-packages to the PYTHONPATH environment variable. This is because Ubuntu does not list the site-packages folder in the sys.path
 ENV PYTHONPATH=/usr/lib/python2.7/site-packages
 
 # Uncomment the following line if you would like to run all the dispatch unit tests and system tests. 
