@@ -52,6 +52,7 @@ class TestOverviewPage(TestCase):
 
     @pytest.mark.nondestructive
     @pytest.mark.verifies(issue='DISPATCH-434')
+    @pytest.mark.flaky(browser='ie10')
     def test_expanding_tree(self):
         # currently broken, uncomenting eventually crashes ie driver
         # least-work way to fight ElementNotVisibleException: Message: Cannot click on element
