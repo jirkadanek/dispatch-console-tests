@@ -16,7 +16,7 @@ class TestHawtioLogsPage(TestCase):
         return self
 
     @pytest.mark.nondestructive
-    @pytest.mark.reproduces(issue='')
+    @pytest.mark.reproduces(issue='DISPATCH-433')
     def test_open_hawtio_logs_page(self):
         self.test_name = 'test_open_hawtio_logs_page'
         bookmark = '{}/logs'.format(self.base_url)

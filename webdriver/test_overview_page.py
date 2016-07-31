@@ -75,7 +75,7 @@ class TestOverviewPage(TestCase):
     def given_overview_page(self):
         connect = ConnectPage.open(self.base_url, self.selenium)
         connect.wait_for_frameworks()
-        # TODO: this is a bug in console, enable when fixed
+        # TODO: this is a bug in console, enable when DISPATCH-433 fixed
         # ConnectPage.wait(self.selenium)
         connect.wait_for_frameworks()
 

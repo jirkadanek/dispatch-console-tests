@@ -64,7 +64,7 @@ class TestConnectPage(TestCase):
         return self
 
     @pytest.mark.nondestructive
-    # @pytest.mark.reproduces(issue='')
+    @pytest.mark.reproduces(issue='DISPATCH-433')
     def test_open_connect_page(self):
         self.test_name = 'test_open_connect_page'
         self.do_test_open_connect_page()
