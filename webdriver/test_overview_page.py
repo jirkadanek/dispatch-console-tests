@@ -17,11 +17,12 @@
 # under the License.
 #
 
-import os.path
+from typing import List
+
 import pytest
 import time
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.remote.webelement import WebElement
@@ -52,21 +53,35 @@ class TestOverviewPage(TestCase):
     @pytest.mark.nondestructive
     @pytest.mark.verifies(issue='DISPATCH-434')
     def test_expanding_tree(self):
+        # currently broken, uncomenting eventually crashes ie driver
+        # least-work way to fight ElementNotVisibleException: Message: Cannot click on element
+        # self.selenium.implicitly_wait(10)
+
         self.test_name = 'test_expanding_tree'
         node_count = 4
         page = self.given_overview_page()
-        expanders = self.expanders
-        assert len(expanders) == node_count
 
-        for expander in expanders:
-            node = expander.find_element(By.XPATH, './..')
-            if self.is_expanded(node):
-                continue
-            expander.click()
+        expander_locator = (By.CSS_SELECTOR, '.dynatree-node > .dynatree-expander')
+        WebDriverWait(self.selenium, 10).until(EC.element_to_be_clickable(expander_locator))
+        WebDriverWait(self.selenium, 10).until(lambda _: len(self.expanders) == node_count)
 
-        page.wait_for_frameworks()
+        def f():
+            page.wait_for_frameworks()
+            for expander in self.expanders:  # type: WebElement
+                node = self.fight_exception(NoSuchElementException, lambda: expander.find_element(By.XPATH, './..'))
+                if self.is_expanded(node):
+                    continue
+                WebDriverWait(self.selenium, 10).until(lambda _: expander.is_displayed())
+                page.wait_for_frameworks()
+                expander.click()
+                page.wait_for_frameworks()
+        self.fight_exception(StaleElementReferenceException, f)
+
         # all dynatree nodes should be expanded
-        assert all(self.is_expanded(e.find_element(By.XPATH, './..')) for e in self.expanders)
+        def g():
+            page.wait_for_frameworks()
+            assert all(self.is_expanded(e.find_element(By.XPATH, './..')) for e in self.expanders)
+        self.fight_exception(StaleElementReferenceException, g)
         self.take_screenshot("10")
         self.when_navigate_to_entities_page_and_back(page)
 
@@ -97,9 +112,17 @@ class TestOverviewPage(TestCase):
         page.wait_for_frameworks()
 
     @property
-    def expanders(self):
+    def expanders(self) -> List[WebElement]:
         return self.selenium.find_elements(By.CSS_SELECTOR, '.dynatree-node > .dynatree-expander')
 
     @property
-    def expanded_nodes(self):
+    def expanded_nodes(self) -> List[WebElement]:
         return self.selenium.find_elements(By.CSS_SELECTOR, '.dynatree-node.dynatree-expanded')
+
+    def fight_exception(self, exception, test_function):
+        for _ in range(50):
+            try:
+                return test_function()
+            except exception as e:
+                pass
+        pytest.fail("Kept getting Exception")
