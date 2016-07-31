@@ -22,7 +22,6 @@ from selenium import webdriver
 
 
 def pytest_addoption(parser):
-    print("adding option")
     parser.addoption("--console-ip", action="store", default="127.0.0.1",
                      help="IP for connecting to the console")
 
@@ -30,6 +29,14 @@ def pytest_addoption(parser):
 @pytest.fixture
 def selenium(selenium: webdriver.Remote):
     return selenium
+
+
+@pytest.fixture
+def capabilities(capabilities):
+    # HACK: when specifying capability on command line, the "true" is sent as a string. Only a guess, but I trust it.
+    # string does not work, c.f. https://github.com/seleniumhq/selenium-google-code-issue-archive/issues/8160
+    capabilities['ie.ensureCleanSession'] = True
+    return capabilities
 
 
 @pytest.fixture(scope="module")
