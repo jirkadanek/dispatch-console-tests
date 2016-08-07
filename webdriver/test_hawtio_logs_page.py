@@ -16,13 +16,12 @@ class TestHawtioLogsPage(TestCase):
         return self
 
     @pytest.mark.nondestructive
-    @pytest.mark.reproduces(issue='DISPATCH-433')
+    @pytest.mark.verifies(issue='DISPATCH-433')
     def test_open_hawtio_logs_page(self):
         self.test_name = 'test_open_hawtio_logs_page'
         bookmark = '{}/logs'.format(self.base_url)
         self.selenium.get(bookmark)
-        with pytest.raises(TimeoutException):
-            LogsPage.wait(self.selenium)
+        LogsPage.wait(self.selenium)
         self.take_screenshot("10")
         # TODO: check it is not just empty page with toolbar
         self.then_no_js_error()
