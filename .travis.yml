@@ -29,7 +29,9 @@ services:
 addons:
   # https://docs.travis-ci.com/user/firefox/
   # https://muffinresearch.co.uk/using-the-latest-version-of-firefox-in-travis-ci/
-  firefox: latest
+  firefox: 47.0.1
+  # TODO(jdanek): Investigate https://travis-ci.org/jdanekrh/dispatch-console-tests/jobs/150479482
+  # firefox: latest
   apt:
     sources:
       # http://blog.500tech.com/setting-up-travis-ci-to-run-tests-on-latest-google-chrome-version/
