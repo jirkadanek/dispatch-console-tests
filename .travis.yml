@@ -17,11 +17,12 @@
 # under the License.
 #
 
+dist: trusty
+sudo: required
 language: python
+cache: pip
 python:
   - "3.5"
-sudo: required
-dist: trusty
 
 services:
   - docker
