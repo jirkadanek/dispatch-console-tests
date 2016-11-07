@@ -26,8 +26,8 @@ RUN apt-get update && apt-get -y install \
     wget \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ENV TOMCAT_VERSION 8.0.36
-ENV HAWTIO_VERSION 1.4.65
+ENV TOMCAT_VERSION 8.5.13
+ENV HAWTIO_VERSION 1.5.0
 
 RUN mkdir /main
 WORKDIR /main
