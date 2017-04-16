@@ -17,11 +17,11 @@
 # under the License.
 #
 
-FROM debian:stable
+FROM debian:testing
 MAINTAINER "jdanek@redhat.com"
 
 RUN apt-get update && apt-get -y install \
-    openjdk-7-jre-headless \
+    openjdk-8-jre-headless \
     unzip \
     wget \
     && apt-get clean && rm -rf /var/lib/apt/lists/*

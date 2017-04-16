@@ -18,5 +18,5 @@
 #
 
 ipython
-pytest-selenium==1.3.1
-pytest-xdist==1.14
+pytest-selenium==1.9.1
+pytest-xdist==1.15

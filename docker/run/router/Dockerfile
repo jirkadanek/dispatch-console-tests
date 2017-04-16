@@ -20,7 +20,7 @@
 # Notes:
 #   * python-pkg-resources is not in websockify dependencies but is required
 
-FROM debian:stable
+FROM debian:testing
 MAINTAINER "jdanek@redhat.com"
 
 # Install all the required packages. Some in this list were picked off from proton's INSTALL.md (https://github.com/apache/qpid-proton/blob/master/INSTALL.md) and the rest are from dispatch (https://github.com/apache/qpid-dispatch/blob/master/README)

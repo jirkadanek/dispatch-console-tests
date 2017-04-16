@@ -29,8 +29,7 @@
 # Notes:
 #   * python-pkg-resources is not in websockify dependencies but is required
 
-# Gets the latest stable Debian from dockerhub
-FROM debian:stable
+FROM debian:testing
 MAINTAINER "jdanek@redhat.com"
 
 # Install all the required packages. Some in this list were picked off from
@@ -50,7 +49,7 @@ RUN apt-get update && apt-get -y install \
     swig \
     valgrind \
     \
-    openjdk-7-jdk \
+    openjdk-8-jdk \
     maven \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
