@@ -29,8 +29,6 @@ services:
 addons:
   # https://docs.travis-ci.com/user/firefox/
   # https://muffinresearch.co.uk/using-the-latest-version-of-firefox-in-travis-ci/
-  #  firefox: 47.0.1
-  #  # TODO(jdanek): Investigate https://travis-ci.org/jdanekrh/dispatch-console-tests/jobs/150479482
   firefox: latest
   apt:
     sources:
@@ -44,7 +42,7 @@ addons:
 env:
   matrix:
     - "DRIVER=Chrome PLATFORM=any BROWSER_NAME=any VERSION=any"
-    - "DRIVER=Firefox PLATFORM=any BROWSER_NAME=any VERSION=any"
+    - "DRIVER=Firefox PLATFORM=any BROWSER_NAME=firefox VERSION=any"
 
 before_install:
   # https://docs.travis-ci.com/user/docker/
@@ -58,6 +56,8 @@ before_install:
   - curl -L -O "http://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
   - unzip chromedriver_linux64.zip
   - chmod +x chromedriver
+  - curl -L -O "https://github.com/mozilla/geckodriver/releases/download/v0.15.0/geckodriver-v0.15.0-linux64.tar.gz"
+  - tar -xvf geckodriver-*
   - export PATH=$PATH:$PWD
 
 install:

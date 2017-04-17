@@ -28,4 +28,5 @@ py.test -s \
  --capability version "${VERSION}" \
  --capability tunnel-identifier ${TRAVIS_JOB_NUMBER} \
  --capability build travis-${TRAVIS_BUILD_NUMBER} \
+ --capability marionette true \
  --base-url http://127.0.0.1:8080/hawtio --verify-base-url
