@@ -18,17 +18,50 @@
 #
 
 import pytest
+from _pytest.fixtures import FixtureRequest
+from selenium import webdriver
 from runner import initialize_local_chrome, deinitialize_selenium
 
+from webdriver.page_objects import HawtioPageObjectContainer, StandalonePageObjectContainer
 
-@pytest.fixture(scope="function")
-def selenium(request):
-    driver = initialize_local_chrome()
-    request.addfinalizer(lambda: deinitialize_selenium(driver))
-    return driver
+
+def pytest_addoption(parser):
+    parser.addoption("--local-chrome", action="store_true", default=False,
+                     help='use local chrome browser, shortcut for test dev')
+    parser.addoption("--console-ip", action="store", default="127.0.0.1",
+                     help="IP for connecting to the console")
+    parser.addoption("--console", action="store", default="hawtio",
+                     help="type of console, either hawtio or stand-alone")
+
+
+@pytest.fixture
+def selenium(request: FixtureRequest) -> webdriver.Remote:
+    if request.config.getoption('--local-chrome'):
+        driver = initialize_local_chrome()
+        request.addfinalizer(lambda: deinitialize_selenium(driver))
+        return driver
+    return request.getfixturevalue('selenium')
+
+
+@pytest.fixture
+def capabilities(capabilities):
+    # HACK: when specifying capability on command line, the "true" is sent as a string. Only a guess, but I trust it.
+    # string does not work, c.f. https://github.com/seleniumhq/selenium-google-code-issue-archive/issues/8160
+    capabilities['ie.ensureCleanSession'] = True
+    return capabilities
 
 
 @pytest.fixture(scope="module")
 def console_ip(request):
-
     return request.config.getoption("--console-ip")
+
+
+@pytest.fixture(scope="module")
+def pages(request):
+    console = request.config.getoption("--console")
+    if console == 'hawtio':
+        return HawtioPageObjectContainer()
+    elif console == 'stand-alone':
+        return StandalonePageObjectContainer()
+    else:
+        raise RuntimeError("Unexpected --console parameter value: ", console)

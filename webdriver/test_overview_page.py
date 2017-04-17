@@ -28,15 +28,19 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+from webdriver.page_objects import PageObjectContainer
 from .page_objects import ConnectPage, OverviewPage
 from .test_connect_page import TestCase
 
 
 class TestOverviewPage(TestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, base_url: str, console_ip: str, selenium: webdriver.Remote):
+    def setup(self, base_url: str, console_ip: str, pages: PageObjectContainer, selenium: webdriver.Remote):
         self.base_url = base_url
         self.console_ip = console_ip
+        self.console_port = 5673
+        self.ConnectPage = pages.connect_page
+        self.OverviewPage = pages.overview_page
         self.selenium = selenium
         self.test_name = None
         return self
@@ -73,15 +77,15 @@ class TestOverviewPage(TestCase):
         return 'dynatree-expanded' in node.get_attribute('class')
 
     def given_overview_page(self):
-        connect = ConnectPage.open(self.base_url, self.selenium)
+        connect = self.ConnectPage.open(self.base_url, self.selenium)
         connect.wait_for_frameworks()
-        ConnectPage.wait(self.selenium)
+        self.ConnectPage.wait(self.selenium)
         connect.wait_for_frameworks()
 
-        connect.connect_to(self.console_ip)
+        connect.connect_to(self.console_ip, self.console_port)
         connect.connect_button.click()
-        OverviewPage.wait(self.selenium)
-        overview = OverviewPage(self.selenium)
+        self.OverviewPage.wait(self.selenium)
+        overview = self.OverviewPage(self.selenium)
         overview.wait_for_frameworks()
         return overview
 

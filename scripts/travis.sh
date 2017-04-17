@@ -21,8 +21,6 @@
 
 # run this from the repo root
 
-pushd webdriver
-
 py.test -s \
  --driver "${DRIVER}" \
  --capability browserName "${BROWSER_NAME}" \

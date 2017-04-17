@@ -19,7 +19,6 @@
 
 import os.path
 import pytest
-import time
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
@@ -27,7 +26,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from .page_objects import PLUGIN_NAME, ConnectPage, OverviewPage
+from .page_objects import PLUGIN_NAME, PageObjectContainer
 
 
 class TestCase(object):
@@ -56,9 +55,11 @@ class TestCase(object):
 
 class TestConnectPage(TestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, base_url: str, console_ip: str, selenium: webdriver.Remote):
+    def setup(self, base_url: str, console_ip: str, pages: PageObjectContainer, selenium: webdriver.Remote):
         self.base_url = base_url
         self.console_ip = console_ip
+        self.ConnectPage = pages.connect_page
+        self.OverviewPage = pages.overview_page
         self.selenium = selenium
         self.test_name = None
         return self
@@ -69,7 +70,7 @@ class TestConnectPage(TestCase):
         self.test_name = 'test_open_connect_page'
         self.do_test_open_connect_page()
 
-        ConnectPage.wait(self.selenium)
+        self.ConnectPage.wait(self.selenium)
         self.take_screenshot("10")
 
         # check that when reloaded, the page is not empty below the bar
@@ -77,7 +78,7 @@ class TestConnectPage(TestCase):
         self.take_screenshot("20")
 
     def do_test_open_connect_page(self):
-        connect = ConnectPage.open(self.base_url, self.selenium)
+        connect = self.ConnectPage.open(self.base_url, self.selenium)
         connect.wait_for_frameworks()
         return connect
 
@@ -85,11 +86,11 @@ class TestConnectPage(TestCase):
     @pytest.mark.verifies(issue='DISPATCH-433')
     def test_redirect_to_connect_page(self):
         self.test_name = 'test_redirect_to_connect_page'
-        bookmark = '{}/{}/overview'.format(self.base_url, PLUGIN_NAME)
+        bookmark = self.OverviewPage.url(self.base_url)
 
         self.selenium.get(bookmark)
-        ConnectPage.wait(self.selenium)
-        page = ConnectPage(self.selenium)  # check it is not just empty page with toolbar
+        self.ConnectPage.wait(self.selenium)
+        page = self.ConnectPage(self.selenium)  # check it is not just empty page with toolbar
         self.then_no_js_error()
         self.take_screenshot("10")
 
@@ -153,7 +154,7 @@ class TestConnectPage(TestCase):
         self.then_no_js_error()
 
     def given_connect_page(self):
-        page = ConnectPage.open(self.base_url, self.selenium)
+        page = self.ConnectPage.open(self.base_url, self.selenium)
         return page
 
     def when_correct_details(self, page):
@@ -161,7 +162,7 @@ class TestConnectPage(TestCase):
 
     def then_login_succeeds(self):
         try:
-            OverviewPage.wait(self.selenium)
+            self.OverviewPage.wait(self.selenium)
         except TimeoutException:
             pytest.fail("login did not succeed (within time limit)")
 
