@@ -40,16 +40,20 @@ addons:
 
 # https://github.com/travis-ci/travis-web/blob/15dc5ff92184db7044f0ce3aa451e57aea58ee19/.travis.yml
 env:
+  global:
+    - "IMAGE_TAG=10-6a1e663"
   matrix:
-    - "DRIVER=Chrome PLATFORM=any BROWSER_NAME=any VERSION=any"
-    - "DRIVER=Firefox PLATFORM=any BROWSER_NAME=firefox VERSION=any"
+    - "CONSOLE=hawtio DRIVER=Chrome PLATFORM=any BROWSER_NAME=any VERSION=any"
+    - "CONSOLE=hawtio DRIVER=Firefox PLATFORM=any BROWSER_NAME=firefox VERSION=any"
+    - "CONSOLE=stand-alone DRIVER=Chrome PLATFORM=any BROWSER_NAME=any VERSION=any"
+    - "CONSOLE=stand-alone DRIVER=Firefox PLATFORM=any BROWSER_NAME=firefox VERSION=any"
 
 before_install:
   # https://docs.travis-ci.com/user/docker/
-  - docker pull jdanekrh/dispatch-console:9-b17156
-  - docker pull jdanekrh/dispatch-router:9-b17156
-  - docker run -d -p 127.0.0.1:8080:8080 jdanekrh/dispatch-console:9-b17156
-  - docker run -d -p 127.0.0.1:5673:5673 jdanekrh/dispatch-router:9-b17156
+  - docker pull jdanekrh/dispatch-console:${IMAGE_TAG}
+  - docker pull jdanekrh/dispatch-router:${IMAGE_TAG}
+  - docker run -d -p 127.0.0.1:8080:8080 jdanekrh/dispatch-console:${IMAGE_TAG}
+  - docker run -d -p 127.0.0.1:5673:5673 jdanekrh/dispatch-router:${IMAGE_TAG}
   - docker ps -a
   # https://github.com/vadesecure/test-automation-framework/blob/66c29c58cdc219c9fe9bd702a7d1784c34b913ce/.travis.yml
   - export CHROMEDRIVER_VERSION=`curl -s http://chromedriver.storage.googleapis.com/LATEST_RELEASE`
