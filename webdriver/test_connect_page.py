@@ -45,7 +45,8 @@ class TestCase(object):
     def then_no_js_error(self):
         # fetching browser logs is not supported on IE
         # http://stackoverflow.com/questions/27796950/how-to-get-the-browser-console-logs-of-internet-explorer-using-python-selenium
-        if self.selenium.capabilities['browserName'].lower() == "internet explorer":
+        # neither on Firefox/geckodriver https://github.com/mozilla/geckodriver/issues/144
+        if self.selenium.capabilities['browserName'].lower() in ["internet explorer", "firefox"]:
             return
         log = self.selenium.get_log('browser')
         for entry in log:
