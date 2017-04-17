@@ -26,7 +26,7 @@ MAINTAINER "jdanek@redhat.com"
 # Install all the required packages. Some in this list were picked off from proton's INSTALL.md (https://github.com/apache/qpid-proton/blob/master/INSTALL.md) and the rest are from dispatch (https://github.com/apache/qpid-dispatch/blob/master/README)
 # TODO: do I need uuid?
 RUN apt-get update && apt-get -y install \
-    libssl1.0.0 \
+    libssl1.0 \
     libsasl2-2 \
     libpython2.7 \
     python-pkg-resources \

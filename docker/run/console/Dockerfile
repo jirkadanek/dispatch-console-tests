@@ -27,7 +27,7 @@ RUN apt-get update && apt-get -y install \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV TOMCAT_VERSION 8.5.13
-ENV HAWTIO_VERSION 1.5.0
+ENV HAWTIO_VERSION 1.4.68
 
 RUN mkdir /main
 WORKDIR /main
@@ -36,10 +36,13 @@ WORKDIR /main
 RUN wget http://mirror.hosting90.cz/apache/tomcat/tomcat-8/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.zip && unzip apache-tomcat-$TOMCAT_VERSION.zip && rm apache-tomcat-$TOMCAT_VERSION.zip
 
 # Download prebuilt hawtio
-ADD https://oss.sonatype.org/content/repositories/public/io/hawt/hawtio-default/$HAWTIO_VERSION/hawtio-default-$HAWTIO_VERSION.war /main/apache-tomcat-$TOMCAT_VERSION/webapps/hawtio.war
+RUN wget https://oss.sonatype.org/content/repositories/public/io/hawt/hawtio-default/$HAWTIO_VERSION/hawtio-default-$HAWTIO_VERSION.war -O /main/apache-tomcat-$TOMCAT_VERSION/webapps/hawtio.war
 
+# Copy the stand-alone console
+COPY main/main/qpid-dispatch/console/stand-alone/ /main/apache-tomcat-$TOMCAT_VERSION/webapps/stand-alone/
 # Copy the war from build image volume
 COPY main/main/qpid-dispatch/console/hawtio/target/dispatch-hawtio-console-*.war /main/apache-tomcat-$TOMCAT_VERSION/webapps/dispatch-hawtio-console.war
+
 RUN chmod +x /main/apache-tomcat-$TOMCAT_VERSION/bin/*.sh
 RUN echo "bash /main/apache-tomcat-$TOMCAT_VERSION/bin/catalina.sh run" > tomcat.sh
 CMD ["bash", "tomcat.sh"]

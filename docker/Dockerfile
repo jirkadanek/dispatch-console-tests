@@ -40,7 +40,7 @@ RUN apt-get update && apt-get -y install \
     gcc \
     checkinstall \
     git \
-    libssl-dev \
+    libssl1.0-dev \
     libsasl2-dev \
     make \
     pkg-config \
@@ -74,13 +74,13 @@ RUN ctest -VV
 # Perform these commands in the run phase, so that directories can be mounted
 RUN touch /run.sh
 # Build the hawtio console .war file
-RUN echo cd /main/qpid-dispatch/console/hawtio > /run.sh
-RUN echo mvn clean package > /run.sh
+RUN echo cd /main/qpid-dispatch/console/hawtio >> /run.sh
+RUN echo mvn clean package >> /run.sh
 
 # Copy artifacts out of the build image
-RUN echo cd /main/ > /run.sh
-RUN echo cp -R /main/ /console > /run.sh
-RUN echo cp -R /main/ /router > /run.sh
+RUN echo cd /main/ >> /run.sh
+RUN echo cp -R /main/ /console >> /run.sh
+RUN echo cp -R /main/ /router >> /run.sh
 
 WORKDIR /
 CMD bash /run.sh
