@@ -64,22 +64,17 @@ class TestConnectPage(TestCase):
         return self
 
     @pytest.mark.nondestructive
-    @pytest.mark.reproduces(issue='DISPATCH-433')
+    @pytest.mark.verifies(issue='DISPATCH-433')
     def test_open_connect_page(self):
         self.test_name = 'test_open_connect_page'
         self.do_test_open_connect_page()
 
-        # BUG: the connect button in the bar is not highlighted
-        with pytest.raises(TimeoutException):
-            ConnectPage.wait(self.selenium)
+        # the connect button in the bar is highlighted
+        ConnectPage.wait(self.selenium)
         self.take_screenshot("10")
 
-        if self.selenium.capabilities['browserName'] == 'firefox':
-            # BUG: when reloaded, the page is empty below the bar
-            with pytest.raises(TimeoutException):
-                self.do_test_open_connect_page()
-        else:
-            self.do_test_open_connect_page()
+        # when reloaded, the page is not empty below the bar
+        self.do_test_open_connect_page()
         self.take_screenshot("20")
 
     def do_test_open_connect_page(self):
