@@ -16,8 +16,10 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-
+from abc import ABCMeta, abstractmethod, abstractproperty
 import time
+from typing import Type
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
@@ -104,13 +106,13 @@ try {
             time.sleep(d)
             t += d
 
-    def wait_for_angular(self):
+    def wait_for_angular(self, element: str = "html"):
         # waitForAngular()
         # https://github.com/angular/protractor/blob/71532f055c720b533fbf9dab2b3100b657966da6/lib/clientsidescripts.js#L51
         self.selenium.set_script_timeout(10)
         self.selenium.execute_async_script("""
         callback = arguments[arguments.length - 1];
-        angular.element('html').injector().get('$browser').notifyWhenNoOutstandingRequests(callback);""")
+        angular.element('{}').injector().get('$browser').notifyWhenNoOutstandingRequests(callback);""".format(element))
 
 
 class LogsPage(PageObject):
@@ -143,10 +145,13 @@ class ConnectPage(PageObject):
         return self.selenium.find_element(By.CSS_SELECTOR, '#dispatch-login-container button')
 
     @classmethod
+    def url(cls, base_url):
+        return base_url + '/{}'.format(PLUGIN_NAME)
+
+    @classmethod
     def open(cls, base_url, selenium):
-        url = base_url + '/{}'.format(PLUGIN_NAME)
-        selenium.get(url)
-        return ConnectPage(selenium)
+        selenium.get(cls.url(base_url))
+        return cls(selenium)
 
     @classmethod
     def wait(cls, selenium: webdriver.Remote):
@@ -174,6 +179,10 @@ class OverviewPage(PageObject):
         super().__init__(selenium)
 
     @classmethod
+    def url(cls, base_url):
+        return '{}/{}/overview'.format(base_url, PLUGIN_NAME)
+
+    @classmethod
     def wait(cls, selenium: webdriver.Remote):
         # wait for Overview link in the top bar to be active
         locator = (By.CSS_SELECTOR, '.active a[ng-href="#/{}/overview"]'.format(PLUGIN_NAME))
@@ -188,3 +197,81 @@ class OverviewPage(PageObject):
     def overview_tab(self) -> WebElement:
         locator = (By.CSS_SELECTOR, 'a[ng-href="#/{}/overview"]'.format(PLUGIN_NAME))
         return self.wait_locate_visible_element(locator)
+
+
+class StandaloneOverviewPage(OverviewPage):
+    def __init__(self, selenium: webdriver.Remote):
+        super().__init__(selenium)
+
+    @classmethod
+    def url(cls, base_url: str) -> str:
+        return '{}/#!/overview'.format(base_url)
+
+    @classmethod
+    def wait(cls, selenium: webdriver.Remote):
+        # wait for Overview link in the top bar to be active
+        locator = (By.CSS_SELECTOR, 'li.active > a[ng-href="#!/overview"]')
+        WebDriverWait(selenium, 30).until(EC.presence_of_element_located(locator))
+
+    @property
+    def entities_tab(self) -> WebElement:
+        locator = (By.CSS_SELECTOR, 'li > a[ng-href="#!/list"]')
+        return self.wait_locate_visible_element(locator)
+
+    @property
+    def overview_tab(self) -> WebElement:
+        locator = (By.CSS_SELECTOR, 'li > a[ng-href="#!/overview"]')
+        return self.wait_locate_visible_element(locator)
+
+    def wait_for_angular(self, element: str = "body"):
+        return super().wait_for_angular(element)
+
+
+class StandaloneConnectPage(ConnectPage):
+    def __init__(self, selenium: webdriver.Remote):
+        super().__init__(selenium)
+
+    @classmethod
+    def url(cls, base_url: str) -> str:
+        return base_url
+
+    @classmethod
+    def wait(cls, selenium: webdriver.Remote):
+        # wait for Connect link in the top bar to be active
+        locator = (By.CSS_SELECTOR, 'a[ng-href="#!/connect"]')
+        WebDriverWait(selenium, 30).until(EC.presence_of_element_located(locator))
+
+    def wait_for_angular(self, element: str = "body"):
+        return super().wait_for_angular(element)
+
+
+class PageObjectContainer(object, metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def overview_page(self) -> Type[OverviewPage]:
+        pass
+
+    @property
+    @abstractmethod
+    def connect_page(self) -> Type[ConnectPage]:
+        pass
+
+
+class HawtioPageObjectContainer(PageObjectContainer):
+    @property
+    def overview_page(self):
+        return OverviewPage
+
+    @property
+    def connect_page(self):
+        return ConnectPage
+
+
+class StandalonePageObjectContainer(PageObjectContainer):
+    @property
+    def overview_page(self):
+        return StandaloneOverviewPage
+
+    @property
+    def connect_page(self):
+        return StandaloneConnectPage

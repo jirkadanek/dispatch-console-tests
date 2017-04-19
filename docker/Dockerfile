@@ -29,8 +29,7 @@
 # Notes:
 #   * python-pkg-resources is not in websockify dependencies but is required
 
-# Gets the latest stable Debian from dockerhub
-FROM debian:stable
+FROM debian:testing
 MAINTAINER "jdanek@redhat.com"
 
 # Install all the required packages. Some in this list were picked off from
@@ -41,7 +40,7 @@ RUN apt-get update && apt-get -y install \
     gcc \
     checkinstall \
     git \
-    libssl-dev \
+    libssl1.0-dev \
     libsasl2-dev \
     make \
     pkg-config \
@@ -49,6 +48,9 @@ RUN apt-get update && apt-get -y install \
     sasl2-bin \
     swig \
     valgrind \
+    \
+    openjdk-8-jdk \
+    maven \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Create a main directory and clone the qpid-proton repo from github
@@ -69,14 +71,16 @@ ENV PYTHONPATH=/usr/lib/python2.7/site-packages
 # Uncomment the following line if you would like to run all the dispatch unit tests and system tests. 
 RUN ctest -VV
 
+# Perform these commands in the run phase, so that directories can be mounted
+RUN touch /run.sh
 # Build the hawtio console .war file
-RUN apt-get update && apt-get -y install \
-    openjdk-7-jdk \
-    maven \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN echo cd /main/qpid-dispatch/console/hawtio >> /run.sh
+RUN echo mvn clean package >> /run.sh
 
-WORKDIR /main/qpid-dispatch/console/hawtio
-RUN mvn clean install && rm -r ~/.m2
+# Copy artifacts out of the build image
+RUN echo cd /main/ >> /run.sh
+RUN echo cp -R /main/ /console >> /run.sh
+RUN echo cp -R /main/ /router >> /run.sh
 
-WORKDIR /main/
-CMD cp -R /main/ /console && cp -R /main/ /router
+WORKDIR /
+CMD bash /run.sh
