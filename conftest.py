@@ -40,7 +40,10 @@ def selenium(request: FixtureRequest) -> webdriver.Remote:
         driver = initialize_local_chrome()
         request.addfinalizer(lambda: deinitialize_selenium(driver))
         return driver
-    return request.getfixturevalue('selenium')
+    driver = request.getfixturevalue('selenium')  # type: webdriver.Remote
+    yield driver
+    # https://github.com/SeleniumHQ/docker-selenium/issues/87#issuecomment-286231268
+    driver.close()
 
 
 @pytest.fixture
