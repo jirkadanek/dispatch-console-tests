@@ -16,9 +16,13 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-from abc import ABCMeta, abstractmethod, abstractproperty
+
+from abc import ABCMeta, abstractmethod
 import time
-from typing import Type
+
+import pytest
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+from typing import Type, List
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -174,9 +178,78 @@ class ConnectPage(PageObject):
             self.port.send_keys(port)
 
 
-class OverviewPage(PageObject):
+class PluginPage(PageObject):
+    """PluginPage is page inside dispatch-hawtio-plugin. It has a treeview on the left."""
     def __init__(self, selenium: webdriver.Remote):
         super().__init__(selenium)
+        self.node_count = None  # type: int
+
+    @property
+    def expander_locator(self):
+        return By.CSS_SELECTOR, '.dynatree-node > .dynatree-expander'
+
+    def expand_tree(self, node_count):
+        """expand_tree expands treeview (dynatree) by clicking expander arrows one by one"""
+        self.wait_for_frameworks()
+        WebDriverWait(self.selenium, 10).until(EC.element_to_be_clickable(self.expander_locator))
+        WebDriverWait(self.selenium, 10).until(lambda _: len(self.expanders) == node_count)
+
+        # least-work way to fight ElementNotVisibleException: Message: Cannot click on element, and
+        # http://stackoverflow.com/questions/37781539/selenium-stale-element-reference-element-is-not-attached-to-the-page-document/38683022
+        def loop():
+            self.wait_for_frameworks()
+            for expander in self.expanders:  # type: WebElement
+                node = self.retry_on_exception(NoSuchElementException, lambda: expander.find_element(By.XPATH, './..'))
+                if self.is_expanded(node):
+                    continue
+                WebDriverWait(self.selenium, 10).until(lambda _: expander.is_displayed())
+                self.wait_for_frameworks()
+                expander.click()
+                self.wait_for_frameworks()
+        self.retry_on_exception(StaleElementReferenceException, loop)
+
+        self.assert_tree_expanded()
+
+    def assert_tree_expanded(self):
+        def loop():
+            self.wait_for_frameworks()
+            assert all(self.is_expanded(e.find_element(By.XPATH, './..')) for e in self.expanders)
+        self.retry_on_exception(StaleElementReferenceException, loop)
+
+    def is_expanded(self, node: WebElement):
+        return 'dynatree-expanded' in node.get_attribute('class')
+
+    @property
+    def expanders(self) -> List[WebElement]:
+        return self.selenium.find_elements(By.CSS_SELECTOR, '.dynatree-node > .dynatree-expander')
+
+    @property
+    def expanded_nodes(self) -> List[WebElement]:
+        return self.selenium.find_elements(By.CSS_SELECTOR, '.dynatree-node.dynatree-expanded')
+
+    def retry_on_exception(self, exception, test_function, retries=50):
+        for _ in range(retries):
+            try:
+                return test_function()
+            except exception as e:
+                pass
+        pytest.fail("Kept getting Exception")
+
+
+class StandalonePluginPage(PageObject):
+    @property
+    def expander_locator(self):
+        return By.CSS_SELECTOR, '.dynatree-node > .fa-angle'
+
+    @property
+    def expanders(self) -> List[WebElement]:
+        return self.selenium.find_elements(By.CSS_SELECTOR, '.dynatree-node > .fa-angle')
+
+
+class OverviewPage(PluginPage):
+    def __init__(self, selenium: webdriver.Remote):
+        super().__init__(selenium)
+        self.node_count = 5
 
     @classmethod
     def url(cls, base_url):
@@ -199,7 +272,8 @@ class OverviewPage(PageObject):
         return self.wait_locate_visible_element(locator)
 
 
-class StandaloneOverviewPage(OverviewPage):
+# TODO: the order of predecessors matters here; the class hierarchy probably needs changing
+class StandaloneOverviewPage(StandalonePluginPage, OverviewPage):
     def __init__(self, selenium: webdriver.Remote):
         super().__init__(selenium)
 
