@@ -1,2 +1,8 @@
+image: Visual Studio 2017
 install:
+- docker version
 - choco install firefox -version 49.0.1
+
+build_script:
+  - docker pull jdanekrh/dispatch-console:latest
+  - docker pull jdanekrh/dispatch-router:latest
