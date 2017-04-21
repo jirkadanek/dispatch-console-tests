@@ -41,6 +41,8 @@ addons:
 # https://github.com/travis-ci/travis-web/blob/15dc5ff92184db7044f0ce3aa451e57aea58ee19/.travis.yml
 env:
   global:
+    # https://github.com/SeleniumHQ/docker-selenium/issues/87
+    - "DBUS_SESSION_BUS_ADDRESS=/dev/null"
     - "IMAGE_TAG=10-6a1e663"
   matrix:
     - "CONSOLE=hawtio DRIVER=Chrome PLATFORM=any BROWSER_NAME=any VERSION=any"
