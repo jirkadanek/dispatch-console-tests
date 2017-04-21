@@ -17,19 +17,12 @@
 # under the License.
 #
 
-import os.path
+from typing import List
+
 import pytest
-import time
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 from webdriver.page_objects import PageObjectContainer
-from .page_objects import ConnectPage, OverviewPage
 from .test_connect_page import TestCase
 
 
@@ -53,28 +46,14 @@ class TestOverviewPage(TestCase):
     @pytest.mark.verifies(issue='DISPATCH-434')
     def test_expanding_tree(self):
         self.test_name = 'test_expanding_tree'
-        node_count = 4
         page = self.given_overview_page()
-        expanders = self.expanders
-        assert len(expanders) == node_count
 
-        for expander in expanders:
-            node = expander.find_element(By.XPATH, './..')
-            if self.is_expanded(node):
-                continue
-            expander.click()
-
-        page.wait_for_frameworks()
-        # all dynatree nodes should be expanded
-        assert all(self.is_expanded(e.find_element(By.XPATH, './..')) for e in self.expanders)
+        page.expand_tree(page.node_count)
         self.take_screenshot("10")
+
         self.when_navigate_to_entities_page_and_back(page)
-
-        assert len(self.expanded_nodes) == node_count
+        assert len(page.expanded_nodes) == page.node_count
         self.take_screenshot("20")
-
-    def is_expanded(self, node: WebElement):
-        return 'dynatree-expanded' in node.get_attribute('class')
 
     def given_overview_page(self):
         connect = self.ConnectPage.open(self.base_url, self.selenium)
@@ -93,13 +72,5 @@ class TestOverviewPage(TestCase):
         page.entities_tab.click()
         page.wait_for_frameworks()
         page.overview_tab.click()
-        OverviewPage.wait(self.selenium)
+        self.OverviewPage.wait(self.selenium)
         page.wait_for_frameworks()
-
-    @property
-    def expanders(self):
-        return self.selenium.find_elements(By.CSS_SELECTOR, '.dynatree-node > .dynatree-expander')
-
-    @property
-    def expanded_nodes(self):
-        return self.selenium.find_elements(By.CSS_SELECTOR, '.dynatree-node.dynatree-expanded')
