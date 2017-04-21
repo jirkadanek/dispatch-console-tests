@@ -19,6 +19,7 @@
 
 from abc import ABCMeta, abstractmethod
 import time
+from unittest.mock import Mock
 
 import pytest
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
@@ -120,6 +121,12 @@ try {
 
 
 class LogsPage(PageObject):
+    @classmethod
+    def open(cls, base_url, selenium):
+        url = '{}/logs'.format(base_url)
+        selenium.get(url)
+        return cls(selenium)
+
     @classmethod
     def wait(cls, selenium: webdriver.Remote):
         locator = (By.CSS_SELECTOR, '.active a[ng-href="#/logs"]')
@@ -330,6 +337,11 @@ class PageObjectContainer(object, metaclass=ABCMeta):
     def connect_page(self) -> Type[ConnectPage]:
         pass
 
+    @property
+    @abstractmethod
+    def logs_page(self) -> Type[LogsPage]:
+        pass
+
 
 class HawtioPageObjectContainer(PageObjectContainer):
     @property
@@ -340,6 +352,10 @@ class HawtioPageObjectContainer(PageObjectContainer):
     def connect_page(self):
         return ConnectPage
 
+    @property
+    def logs_page(self):
+        return LogsPage
+
 
 class StandalonePageObjectContainer(PageObjectContainer):
     @property
@@ -349,3 +365,7 @@ class StandalonePageObjectContainer(PageObjectContainer):
     @property
     def connect_page(self):
         return StandaloneConnectPage
+
+    @property
+    def logs_page(self):
+        return Mock(side_effect=lambda: pytest.skip("Test attempted to use NonexistentPage, so it is skipped."))
