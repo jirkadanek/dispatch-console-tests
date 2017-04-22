@@ -45,13 +45,21 @@ addons:
       secure: "dRLcC1JYrl0tnwIKBqPixuR9pbpGdJJB7oDzj1dr56FfXuu8+JTyy+Tvsz7OBE7EDreuxOPV5Yd5v/+DF+iw9+1QHTjenfFD0Qj79cm+8tyjESBeKuD11SCEyKMksySbF3RShOdsof3W08uPg/Jlowxel1VtUWRVY54Ht8svLg/aigVtM1Px1XME1kIXav1n6nQvUsdA8nnCfqagh6ctGQcmjBVJqskYPl8jyMuovFKnnZ8hCpq5vMMxIhsahdEzwvU1RI20Sci9Fc7B2ux6jFX0JqYR7t/HrskMVNS4lBcH/JHVb+7L96W1bUXgTb1xrZyKdgyE+PM1Lcx7jxV23wU5x4K7Sl6olIwE9qXJDXW3e4tsxjeR+PFU/duiq85ezgTimsZGNISGSaNenYI+PMTeLjfDdgw19eT8X8j26pAnQ5K/pydsNahlwpXRoF2iz4x5WOgNGjHnhuDOUR376S0DbV1GGnq7d5Yzu2JH5VjnaXSbY8kD42i1Uxfiod/4YtSqmDJGdH4Nha0DLVE5gYgXhRs3qPndf6Prw6lKTZ/Q0Awj19HVXEX4M1Ht4kfLojUAPCpclcK4fIWW73mzfyfNBQutDaw+H4NHE4AzrOHNdVOGH94q6RYa8rmKMKtBksF7kMfbBg2IC/jZb2vLhb/4ys48Ceno8Uxd8ETDMX4="
     no_ssl_bump_domains: "127.0.0.1,localhost"
 
+  # https://docs.travis-ci.com/user/browserstack/
+  browserstack:
+    username: "jiridanek1"
+    access_key:
+      secure: "yB5uMh21ZW7MULaKmxplao3DYcanUPV3gyWmXue8A9ILTmGzgbJgm+HNLY8SL9lRT/PHAxZ741n6gqCAbanTpe74GicvebeMQjlJ4VWo5762pCaB5f/neM8g2sPZLIRNn0YxyuEWe7kkmP0AZ7tjHKqPc34avhobaURNDoVC8/2uaUFaqqs6T9MX9j7EKObT0BsFDygsSHRlzWcN5pmvVg25J20+F8aAwOx0mKWXn/c0wN9NSYGrB3JnuzBQFfs6M/DB36+kxrSo4xBrZ//HTqPWYTpsvq2nIJjzUY0wHowuGNRga90mFvlRFuRObn9pH8gSYWwQ4gTYayZKYoQdVtmrQpvVvrBE0YXE4ZBzFRbjw3INIrX7CTcTc9VVW1C4aMR2e8UKkh+vFSdcw9ibc4+hVoiEE+e23wgp/HjnNEtHrT1khDWJkmKmiF41IAqfFq4Zb7wPdR604Nb8XSUnhyaqt969vhmCzXdqtNcwpB/dN7EWBENzMh9Fv0NGJDX5aaQLUfVNQ5I5jwt+4TjPKGkiOiHIDH+/h8o7qvvgKe07Q0kXhpRkz4+abKzW3fuizpwGhiQlExsnM4Rg8k/5mIKSz4m0ydIL3CrNmsHg3Noc1dUMzhbAS5sQOSdWfi9LYmWRjbyoEu5A3ECbp8MnT4q9wRwD7jX2zMWKoEnce40="
+
 # https://github.com/travis-ci/travis-web/blob/15dc5ff92184db7044f0ce3aa451e57aea58ee19/.travis.yml
 env:
   global:
     - "SAUCELABS_USERNAME=jdanekrh"
+    # SAUCELABS_ACCESS_KEY
     - secure: "lkyhDfP1TvTmAy9eu5gRtyCJZoOeVmsfNByCHeR/POMWsBoh4Ad7zIaMGNYtXIU+7YDxeOnVIwm6dheR1mOu3eVMrCpPhS8wkP4SVeA8/tn+tQd4SB1YAmrDGnhKOVtSNTJLsC4/CSabKnUyN+he75vuzdVmvpWFmItZ3dbl2rc9UVO8WoqasgW/YJejJu5dHZ3RjvUfyROaTMgp4HXjR0WtsHhZDiA7qEvboC9P8tWZ83V2qUr3JThGRwkgpTYLMa1QplcafLjWzsOgZ2HNP/FjqEcYnT0C8LgaVkhZ3LtvTZRML7BPFYmWz1Y6nHj3ra2CJv6PCjTyTyB9McKu29vjo7wQgdUC9wqDWVdXb8oKx0wC4DkNRIXbY2MN786G4IbUq2bWOh5FCJ2yjRlt/sid3E4NyC9U6Jsq0ywqU2PZDrXyWcjHFG90XsUMcwVkTQkdMPQcOz7A6HQ5OgioteB4chrJYWb969CCJZfRrA39EQ5uP1JdF4o/pV4jfDAVbnDvkJPxHCmS5Q42qQxlE5cfpDpRIZkJ87VgTx2yqlL0LD+xcVcDViURk85OYoH5qclJ+IqHe4qhxh8IkSNej4nbrQ5ykcitu+LoN9mAXBdCXMnqO0vONVAP+pA4FTGVSqx3B+ZqGwTxanJnahQn1YZpmfGAe9P7FP2UzyvmOBg="
-    # https://github.com/SeleniumHQ/docker-selenium/issues/87
-    - "DBUS_SESSION_BUS_ADDRESS=/dev/null"
+    - "BROWSERSTACK_USERNAME=jiridanek1"
+    # BROWSERSTACK_ACCESS_KEY
+    - secure: "T5Wz7agc8sE8RZiwcMa9ndU5/YaFJqGrmvrhDOgJb7BQ5V4i6z9K+5VayESxn0HF52GX+y6vzSNqOZ5umNorETJAiaaejKfrF7dzcoB6QIx5qur1YA8nb0Tl1wfxieAOwOCSRn8Ybe2pNJ0cUTVTGMBsXyGwbPdBr4LIrPGayyv7a0YqL979zAgpN70VjCuUUZVWCo6QjsadRkS8oo6eBNDTOT6F1g58eRh5A1HW++mU7Bq3/JCoCw+dqGNoE4M/E0QT/6hHuWd5HHoJK5eyPWwXpjdYB1G4v1K8bAArgH4gOZSfbMjvYUj746ko7gCRZR3ctkK3qWeH5V7CPvENK3xBj47ui0+MqbV9KBKoW5S02DZ3rUA54PqNzCwUT2lWasUkMeLpkd8/Nk2nbdCJEz7c271oaDuDKv0ka5gb8eSmFJN4r1GwyVQdAj1Y0rNdYCwh+22mtFJSNQ42F+F9N7V19+qgRLNQUqY6yPQsARPsUBwrR8z638QXCoC8b8VBMZ4MY4qNRXlLFC+mRVxWD8r4LyXxVBSrJZMa9JB9JK9G7944gFlF8fKgzOW/8M80mn+OmvaXGK+AAyOBlFMQOut01lJEVCoIxMGh9eAGjbBgzxBMnOQCFcI8RRFd/2DrxVRjyj5OZ7JgRpPmTBtokGlYWgt22Gj90qKpip+7eFM="
     - "IMAGE_TAG=10-6a1e663"
   matrix:
     - "CONSOLE=hawtio DRIVER=Chrome PLATFORM=any BROWSER_NAME=any VERSION=any"
@@ -60,8 +68,10 @@ env:
     - "CONSOLE=stand-alone DRIVER=Firefox PLATFORM=any BROWSER_NAME=firefox VERSION=any"
     - "CONSOLE=hawtio DRIVER=SauceLabs PLATFORM='Windows 8' BROWSER_NAME='internet explorer' VERSION='10.0'"
     - "CONSOLE=stand-alone DRIVER=SauceLabs PLATFORM='Windows 8' BROWSER_NAME='internet explorer' VERSION='10.0'"
-    - "CONSOLE=hawtio DRIVER=SauceLabs PLATFORM='Windows 10' BROWSER_NAME='MicrosoftEdge' VERSION='14'"
-    - "CONSOLE=stand-alone DRIVER=SauceLabs PLATFORM='Windows 10' BROWSER_NAME='MicrosoftEdge' VERSION='14'"
+#    - "CONSOLE=hawtio DRIVER=SauceLabs PLATFORM='Windows 10' BROWSER_NAME='MicrosoftEdge' VERSION='14'"
+#    - "CONSOLE=stand-alone DRIVER=SauceLabs PLATFORM='Windows 10' BROWSER_NAME='MicrosoftEdge' VERSION='14'"
+    - "CONSOLE=hawtio DRIVER=BrowserStack PLATFORM='10' BROWSER_NAME='Edge' VERSION='14'"
+    - "CONSOLE=stand-alone DRIVER=BrowserStack PLATFORM='10' BROWSER_NAME='Edge' VERSION='14'"
 
 before_install:
   # https://docs.travis-ci.com/user/docker/
@@ -70,25 +80,9 @@ before_install:
   - docker run -d -p 127.0.0.1:8080:8080 jdanekrh/dispatch-console:${IMAGE_TAG}
   - docker run -d -p 127.0.0.1:5673:5673 jdanekrh/dispatch-router:${IMAGE_TAG}
   - docker ps -a
-  # https://github.com/vadesecure/test-automation-framework/blob/66c29c58cdc219c9fe9bd702a7d1784c34b913ce/.travis.yml
-  - export CHROMEDRIVER_VERSION=`curl -s http://chromedriver.storage.googleapis.com/LATEST_RELEASE`
-  - curl -L -O "http://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
-  - unzip chromedriver_linux64.zip
-  - chmod +x chromedriver
-  - curl -L -O "https://github.com/mozilla/geckodriver/releases/download/v0.16.0/geckodriver-v0.16.0-linux64.tar.gz"
-  - tar -xvf geckodriver-*
-  - export PATH=$PATH:$PWD
 
 install:
   - pip install -r requirements.txt
-
-# https://docs.travis-ci.com/user/gui-and-headless-browsers/
-# https://swizec.com/blog/how-to-run-javascript-tests-in-chrome-on-travis/swizec/6647
-before_script:
-  - "export CHROME_BIN=chromium-browser"
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3 # give xvfb some time to start
 
 script:
   - bash ./scripts/travis.sh

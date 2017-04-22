@@ -19,11 +19,21 @@
 # under the License.
 #
 
-# run this from the repo root
-
 set -xe
 
-if [[ $DRIVER == SauceLabs ]]; then bash ./scripts/saucelabs.sh; fi
-if [[ $DRIVER == BrowserStack ]]; then bash ./scripts/browserstack.sh; fi
-if [[ $DRIVER == Chrome ]]; then source ./scripts/local.sh; bash ./scripts/chrome.sh; fi
-if [[ $DRIVER == Firefox ]]; then source ./scripts/local.sh; bash ./scripts/firefox.sh; fi
+# https://github.com/vadesecure/test-automation-framework/blob/66c29c58cdc219c9fe9bd702a7d1784c34b913ce/.travis.yml
+export CHROMEDRIVER_VERSION=`curl -s http://chromedriver.storage.googleapis.com/LATEST_RELEASE`
+curl -L -O "http://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
+unzip chromedriver_linux64.zip
+chmod +x chromedriver
+
+# https://github.com/SeleniumHQ/docker-selenium/issues/87
+export DBUS_SESSION_BUS_ADDRESS=/dev/null
+
+#export CHROME_BIN=chromium-browser
+
+PATH=$PATH:$PWD py.test -s \
+ --driver "Chrome" \
+ --capability browserName "${BROWSER_NAME}" \
+ --capability version "${VERSION}" \
+ --base-url http://127.0.0.1:8080/${CONSOLE} --verify-base-url --console ${CONSOLE}

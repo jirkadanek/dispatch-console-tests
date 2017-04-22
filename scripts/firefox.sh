@@ -19,11 +19,13 @@
 # under the License.
 #
 
-# run this from the repo root
-
 set -xe
 
-if [[ $DRIVER == SauceLabs ]]; then bash ./scripts/saucelabs.sh; fi
-if [[ $DRIVER == BrowserStack ]]; then bash ./scripts/browserstack.sh; fi
-if [[ $DRIVER == Chrome ]]; then source ./scripts/local.sh; bash ./scripts/chrome.sh; fi
-if [[ $DRIVER == Firefox ]]; then source ./scripts/local.sh; bash ./scripts/firefox.sh; fi
+curl -L -O "https://github.com/mozilla/geckodriver/releases/download/v0.16.0/geckodriver-v0.16.0-linux64.tar.gz"
+tar -xvf geckodriver-*
+
+PATH=$PATH:$PWD py.test -s \
+ --driver "Firefox" \
+ --capability browserName "${BROWSER_NAME}" \
+ --capability marionette true \
+ --base-url http://127.0.0.1:8080/${CONSOLE} --verify-base-url --console ${CONSOLE}

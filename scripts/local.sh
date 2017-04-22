@@ -19,11 +19,12 @@
 # under the License.
 #
 
-# run this from the repo root
+# source this file, to get at the DISPLAY variable
 
 set -xe
 
-if [[ $DRIVER == SauceLabs ]]; then bash ./scripts/saucelabs.sh; fi
-if [[ $DRIVER == BrowserStack ]]; then bash ./scripts/browserstack.sh; fi
-if [[ $DRIVER == Chrome ]]; then source ./scripts/local.sh; bash ./scripts/chrome.sh; fi
-if [[ $DRIVER == Firefox ]]; then source ./scripts/local.sh; bash ./scripts/firefox.sh; fi
+# https://docs.travis-ci.com/user/gui-and-headless-browsers/
+# https://swizec.com/blog/how-to-run-javascript-tests-in-chrome-on-travis/swizec/6647
+export DISPLAY=:99.0
+sh -e /etc/init.d/xvfb start
+sleep 3 # give xvfb some time to start
