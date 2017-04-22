@@ -46,14 +46,6 @@ def selenium(request: FixtureRequest) -> webdriver.Remote:
     driver.close()
 
 
-@pytest.fixture
-def capabilities(capabilities):
-    # HACK: when specifying capability on command line, the "true" is sent as a string. Only a guess, but I trust it.
-    # string does not work, c.f. https://github.com/seleniumhq/selenium-google-code-issue-archive/issues/8160
-    capabilities['ie.ensureCleanSession'] = True
-    return capabilities
-
-
 @pytest.fixture(scope="module")
 def console_ip(request):
     return request.config.getoption("--console-ip")
