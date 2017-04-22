@@ -60,6 +60,8 @@ env:
     - "CONSOLE=stand-alone DRIVER=Firefox PLATFORM=any BROWSER_NAME=firefox VERSION=any"
     - "CONSOLE=hawtio DRIVER=SauceLabs PLATFORM='Windows 8' BROWSER_NAME='internet explorer' VERSION='10.0'"
     - "CONSOLE=stand-alone DRIVER=SauceLabs PLATFORM='Windows 8' BROWSER_NAME='internet explorer' VERSION='10.0'"
+    - "CONSOLE=hawtio DRIVER=SauceLabs PLATFORM='Windows 10' BROWSER_NAME='MicrosoftEdge' VERSION='14'"
+    - "CONSOLE=stand-alone DRIVER=SauceLabs PLATFORM='Windows 10' BROWSER_NAME='MicrosoftEdge' VERSION='14'"
 
 before_install:
   # https://docs.travis-ci.com/user/docker/
