@@ -27,6 +27,7 @@ py.test -s \
  --capability platform "${PLATFORM}" \
  --capability version "${VERSION}" \
  $(if [[ ${DRIVER} = "SauceLabs" ]]; then echo "--capability build travis-${TRAVIS_BUILD_NUMBER}"; fi) \
+ $(if [[ "${BROWSER_NAME}" = "internet explorer" ]]; then echo "--capability ie.ensureCleanSession true}"; fi) \
  --capability tunnel-identifier ${TRAVIS_JOB_NUMBER} \
  --capability marionette true \
  --base-url http://127.0.0.1:8080/${CONSOLE} --verify-base-url --console ${CONSOLE}
