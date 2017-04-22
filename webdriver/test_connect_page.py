@@ -46,7 +46,7 @@ class TestCase(object):
         # fetching browser logs is not supported on IE
         # http://stackoverflow.com/questions/27796950/how-to-get-the-browser-console-logs-of-internet-explorer-using-python-selenium
         # neither on Firefox/geckodriver https://github.com/mozilla/geckodriver/issues/144
-        if self.selenium.capabilities['browserName'].lower() in ["internet explorer", "firefox"]:
+        if self.selenium.capabilities['browserName'] in ["internet explorer", "firefox", "MicrosoftEdge"]:
             return
         log = self.selenium.get_log('browser')
         for entry in log:
@@ -140,6 +140,7 @@ class TestConnectPage(TestCase):
         self.test_name = 'test_correct_details'
         page = self.given_connect_page()
         when_correct_details(self, page)
+        page.wait_for_frameworks()
         page.connect_button.click()
         self.then_login_succeeds()
         self.then_no_js_error()

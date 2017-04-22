@@ -177,9 +177,10 @@ class ConnectPage(PageObject):
 
     def connect_to(self, host=None, port=None):
         self.host.clear()
+        self.wait_for_frameworks()
         if host is not None:
             self.host.send_keys(host)
-        self.wait_for_frameworks()
+            self.wait_for_frameworks()
         self.port.clear()
         if port is not None:
             self.port.send_keys(port)
