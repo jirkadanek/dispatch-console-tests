@@ -24,7 +24,7 @@
 py.test -s \
  --driver "${DRIVER}" \
  --capability browserName "${BROWSER_NAME}" \
- --capability version "${VERSION}" \
+ $(if [[ ${DRIVER} = "SauceLabs" ]]; then echo "--capability version '${VERSION}'"; fi) \
  $(if [[ ${DRIVER} = "SauceLabs" ]]; then echo "--capability platform '${PLATFORM}'"; fi) \
  $(if [[ ${DRIVER} = "SauceLabs" ]]; then echo "--capability build travis-${TRAVIS_BUILD_NUMBER}"; fi) \
  $(if [[ ${DRIVER} = "SauceLabs" ]]; then echo "--capability tunnel-identifier ${TRAVIS_JOB_NUMBER}"; fi) \
