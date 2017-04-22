@@ -24,7 +24,7 @@
 py.test -s \
  --driver "${DRIVER}" \
  --capability browserName "${BROWSER_NAME}" \
- --capability platform "${PLATFORM}" \
+ $(if [[ ${DRIVER} = "SauceLabs" ]]; then echo "--capability platform '${PLATFORM}'"; fi) \
  --capability version "${VERSION}" \
  $(if [[ ${DRIVER} = "SauceLabs" ]]; then echo "--capability build travis-${TRAVIS_BUILD_NUMBER}"; fi) \
  $(if [[ "${BROWSER_NAME}" = "internet explorer" ]]; then echo "--capability ie.ensureCleanSession true}"; fi) \
