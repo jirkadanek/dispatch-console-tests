@@ -24,11 +24,11 @@
 py.test -s \
  --driver "${DRIVER}" \
  --capability browserName "${BROWSER_NAME}" \
- $(if [[ ${DRIVER} = "SauceLabs" ]]; then echo "--capability platform '${PLATFORM}'"; fi) \
  --capability version "${VERSION}" \
+ $(if [[ ${DRIVER} = "SauceLabs" ]]; then echo "--capability platform '${PLATFORM}'"; fi) \
  $(if [[ ${DRIVER} = "SauceLabs" ]]; then echo "--capability build travis-${TRAVIS_BUILD_NUMBER}"; fi) \
- $(if [[ "${BROWSER_NAME}" = "internet explorer" ]]; then echo "--capability ie.ensureCleanSession true}"; fi) \
- --capability tunnel-identifier ${TRAVIS_JOB_NUMBER} \
- --capability marionette true \
+ $(if [[ ${DRIVER} = "SauceLabs" ]]; then echo "--capability tunnel-identifier ${TRAVIS_JOB_NUMBER}"; fi) \
  $(if [[ ${DRIVER} = "SauceLabs" ]]; then echo "--capability seleniumVersion 3.4.0"; fi) \
+ $(if [[ "${BROWSER_NAME}" = "internet explorer" ]]; then echo "--capability ie.ensureCleanSession true}"; fi) \
+ --capability marionette true \
  --base-url http://127.0.0.1:8080/${CONSOLE} --verify-base-url --console ${CONSOLE}
