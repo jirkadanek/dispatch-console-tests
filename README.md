@@ -2,6 +2,8 @@
 [![Build Status](https://travis-ci.org/jdanekrh/dispatch-console-tests.svg?branch=master)](https://travis-ci.org/jdanekrh/dispatch-console-tests)
 [![Documentation Status](https://readthedocs.org/projects/dispatch-console-tests/badge/?version=latest)](http://dispatch-console-tests.readthedocs.io/en/latest/?badge=latest)
 
+[![Build Status](https://saucelabs.com/browser-matrix/jdanekrh.svg)](https://saucelabs.com/beta/builds/fdc87f92902c4524800dbdb4eead575f)
+
 Tests for https://github.com/apache/qpid-dispatch/tree/master/console
 
 ## Overview
