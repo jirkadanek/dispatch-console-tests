@@ -30,5 +30,5 @@ py.test -s \
  $(if [[ "${BROWSER_NAME}" = "internet explorer" ]]; then echo "--capability ie.ensureCleanSession true}"; fi) \
  --capability tunnel-identifier ${TRAVIS_JOB_NUMBER} \
  --capability marionette true \
- --capability seleniumVersion 3.4.0 \
+ $(if [[ ${DRIVER} = "SauceLabs" ]]; then echo "--capability seleniumVersion 3.4.0"; fi) \
  --base-url http://127.0.0.1:8080/${CONSOLE} --verify-base-url --console ${CONSOLE}
