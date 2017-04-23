@@ -23,7 +23,16 @@
 
 set -xe
 
-if [[ $DRIVER == SauceLabs ]]; then bash ./scripts/saucelabs.sh; fi
-if [[ $DRIVER == BrowserStack ]]; then bash ./scripts/browserstack.sh; fi
-if [[ $DRIVER == Chrome ]]; then source ./scripts/local.sh; bash ./scripts/chrome.sh; fi
-if [[ $DRIVER == Firefox ]]; then source ./scripts/local.sh; bash ./scripts/firefox.sh; fi
+py.test -s \
+ --driver BrowserStack \
+ --capability browserstack.local "true" \
+ --capability browserstack.localIdentifier "${BROWSERSTACK_LOCAL_IDENTIFIER}" \
+ --capability browser "${BROWSER_NAME}" \
+ --capability browser_version "${VERSION}" \
+ --capability os "windows" \
+ --capability os_version "${PLATFORM}" \
+ --capability build "travis-${TRAVIS_BUILD_NUMBER}" \
+ --capability project "dispatch-console" \
+ --base-url http://127.0.0.1:8080/${CONSOLE} --verify-base-url --console ${CONSOLE}
+
+
