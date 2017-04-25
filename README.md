@@ -10,21 +10,22 @@ Tests for https://github.com/apache/qpid-dispatch/tree/master/console
 
 ## Overview
 
-This repository holds end-to-end Webdriver (Selenium 2) tests for dispatch-console.
+This repository holds end-to-end Webdriver (Selenium) tests for dispatch-console.
 
-The console is a Web management tool for Qpid Dispatch Router. It is implemented as a Hawt.io plugin. It displays information about a qpid dispatch router and allows performing administrative commands. Its capabilities are similar to CLI tools `qdstat` and `qdmanage`, except it is a Web page and it can do charts and visualizations. (https://qpid.apache.org/releases/qpid-dispatch-0.6.0/book/console.html)
+The console is a Web management tool for Qpid Dispatch Router. It is implemented as a Hawtio plugin and also a stand-alone JavaScript webapp. It displays information about a qpid dispatch router and allows performing administrative commands. Its capabilities are similar to CLI tools `qdstat` and `qdmanage`, except it is a Web page and it can do charts and visualizations. (https://qpid.apache.org/releases/qpid-dispatch-0.8.0/book/console.html)
 
 ## Running
 
 The easiest way to run the tests is to follow `.travis.yml`
-* get Firefox 47.0.1 ([47.0 does not work with Selenium](http://seleniumsimplified.com/2016/06/use_selenium_webdriver_jar_locally/)) or Google Chrome
-* get the docker image, start it up
-* run the tests as per `scripts/travis.sh`
+* get the docker images, start them up
+* follow either `scripts/firefox.sh` or `scripts/chrome.sh` to setup `geckodriver` or `chromedriver`
+* invoke `py.test` as indicated in that `.sh` script
 
-alternatively, run the tests remotely with something like
-
-    pushd webdriver
-    py.test -s --driver Remote --capability browserName chrome --host 192.168.33.10 --base-url http://10.0.2.2:8080/hawtio --console-ip 10.0.2.2
+Use the `--console-ip` and `--driver-path` switches of `py.test` to adapt to your situation. That is, if the console has to connect elsewhere than to `localhost` and if driver is not on your `$PATH`.
+ 
+When running with browser on another machine, install `selenium-server` and use something like
+ 
+    py.test -s --driver Remote --capability browserName chrome --host 192.168.33.10 --base-url http://10.0.2.2:8080/hawtio --console-ip 10.0.2.2 --console stand-alone
 
 You may need to run selenium-server with the following switch
 
