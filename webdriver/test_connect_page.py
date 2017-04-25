@@ -97,6 +97,7 @@ class TestConnectPage(TestCase):
 
     @pytest.mark.nondestructive
     @pytest.mark.verifies(issue='DISPATCH-416')
+    @pytest.mark.xfail(reason='DISPATCH-747')
     def test_wrong_ip(self):
         self.test_name = 'test_wrong_ip'
         page = self.given_connect_page()
@@ -112,6 +113,7 @@ class TestConnectPage(TestCase):
 
     @pytest.mark.nondestructive
     @pytest.mark.verifies(issue='DISPATCH-428')
+    @pytest.mark.xfail(reason='DISPATCH-746, DISPATCH-747')
     def test_wrong_port(self):
         self.test_name = 'test_wrong_port'
 
@@ -135,7 +137,8 @@ class TestConnectPage(TestCase):
     @pytest.mark.nondestructive
     @pytest.mark.parametrize("when_correct_details", [
         lambda self, page: self.when_correct_details(page),
-        lambda self, page: page.connect_to(self.console_ip)])
+        # lambda self, page: page.connect_to(self.console_ip)  # TODO: xfail because of DISPATCH-747
+    ])
     def test_correct_details(self, when_correct_details):
         self.test_name = 'test_correct_details'
         page = self.given_connect_page()
