@@ -54,7 +54,7 @@ RUN apt-get update && apt-get -y install \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Create a main directory and clone the qpid-proton repo from github
-RUN mkdir /main && cd /main && git clone https://github.com/apache/qpid-proton.git && cd /main/qpid-proton && mkdir /main/qpid-proton/build
+RUN mkdir /main && cd /main && git clone git://git.apache.org/qpid-proton.git && cd /main/qpid-proton && mkdir /main/qpid-proton/build
 
 WORKDIR /main/qpid-proton/build
 RUN cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DSYSINSTALL_BINDINGS=ON -DBUILD_CPP=OFF -DBUILD_JAVA=OFF -DBUILD_PERL=OFF -DSYSINSTALL_PYTHON=ON && make && checkinstall -y --pkgname qpid-proton
