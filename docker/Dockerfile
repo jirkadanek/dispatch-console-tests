@@ -40,6 +40,7 @@ RUN apt-get update && apt-get -y install \
     gcc \
     checkinstall \
     git \
+    libuv1-dev \
     libssl1.0-dev \
     libsasl2-dev \
     make \
