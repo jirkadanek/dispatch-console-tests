@@ -281,6 +281,8 @@ class OverviewPage(PluginPage):
     def __init__(self, selenium: webdriver.Remote):
         super().__init__(selenium)
         self.node_count = 5
+        # Wait for at least one node expander to appear
+        _ = self.wait_locate_visible_element(self.expander_locator)
 
     @classmethod
     def url(cls, base_url):
@@ -297,6 +299,8 @@ class EntitiesPage(PluginPage):
     def __init__(self, selenium: webdriver.Remote):
         super().__init__(selenium)
         self.node_count = 17
+        # Wait for at least one node expander to appear
+        _ = self.wait_locate_visible_element(self.expander_locator)
 
     @classmethod
     def url(cls, base_url):
@@ -305,7 +309,7 @@ class EntitiesPage(PluginPage):
     @classmethod
     def wait(cls, selenium: webdriver.Remote):
         # wait for Entities link in the top bar to be active
-        locator = (By.CSS_SELECTOR, '.active a[ng-href="#/{}/links"]'.format(PLUGIN_NAME))
+        locator = (By.CSS_SELECTOR, '.active a[ng-href="#/{}/list"]'.format(PLUGIN_NAME))
         WebDriverWait(selenium, 30).until(EC.presence_of_element_located(locator))
 
 
@@ -313,6 +317,8 @@ class EntitiesPage(PluginPage):
 class StandaloneOverviewPage(StandalonePluginPage, OverviewPage):
     def __init__(self, selenium: webdriver.Remote):
         super().__init__(selenium)
+        # Wait for at least one node expander to appear
+        _ = self.wait_locate_visible_element(self.expander_locator)
 
     @classmethod
     def url(cls, base_url: str) -> str:
@@ -328,6 +334,8 @@ class StandaloneOverviewPage(StandalonePluginPage, OverviewPage):
 class StandaloneEntitiesPage(StandalonePluginPage, EntitiesPage):
     def __init__(self, selenium: webdriver.Remote):
         super().__init__(selenium)
+        # Wait for at least one node expander to appear
+        _ = self.wait_locate_visible_element(self.expander_locator)
 
     @classmethod
     def url(cls, base_url: str) -> str:

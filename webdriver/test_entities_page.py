@@ -52,7 +52,7 @@ class TestEntitiesPage(TestCase):
         page.expand_tree(page.node_count)
         self.take_screenshot("10")
 
-        self.when_navigate_to_overview_page_and_back(page)
+        page = self.when_navigate_to_overview_page_and_back(page)
         assert len(page.expanded_nodes) == page.node_count
         self.take_screenshot("20")
 
@@ -77,3 +77,4 @@ class TestEntitiesPage(TestCase):
         page.entities_tab.click()
         self.EntitiesPage.wait(self.selenium)
         page.wait_for_frameworks()
+        return self.EntitiesPage(self.selenium)

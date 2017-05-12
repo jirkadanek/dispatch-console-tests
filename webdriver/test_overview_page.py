@@ -51,7 +51,7 @@ class TestOverviewPage(TestCase):
         page.expand_tree(page.node_count)
         self.take_screenshot("10")
 
-        self.when_navigate_to_entities_page_and_back(page)
+        page = self.when_navigate_to_entities_page_and_back(page)
         assert len(page.expanded_nodes) == page.node_count
         self.take_screenshot("20")
 
@@ -74,3 +74,4 @@ class TestOverviewPage(TestCase):
         page.overview_tab.click()
         self.OverviewPage.wait(self.selenium)
         page.wait_for_frameworks()
+        return self.OverviewPage(self.selenium)
