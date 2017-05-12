@@ -193,6 +193,16 @@ class PluginPage(PageObject):
         self.node_count = None  # type: int
 
     @property
+    def entities_tab(self) -> WebElement:
+        locator = (By.CSS_SELECTOR, 'a[ng-href="#/{}/list"]'.format(PLUGIN_NAME))
+        return self.wait_locate_visible_element(locator)
+
+    @property
+    def overview_tab(self) -> WebElement:
+        locator = (By.CSS_SELECTOR, 'a[ng-href="#/{}/overview"]'.format(PLUGIN_NAME))
+        return self.wait_locate_visible_element(locator)
+
+    @property
     def expander_locator(self):
         return By.CSS_SELECTOR, '.dynatree-node > .dynatree-expander'
 
@@ -246,6 +256,19 @@ class PluginPage(PageObject):
 
 class StandalonePluginPage(PageObject):
     @property
+    def entities_tab(self) -> WebElement:
+        locator = (By.CSS_SELECTOR, 'li > a[ng-href="#!/list"]')
+        return self.wait_locate_visible_element(locator)
+
+    @property
+    def overview_tab(self) -> WebElement:
+        locator = (By.CSS_SELECTOR, 'li > a[ng-href="#!/overview"]')
+        return self.wait_locate_visible_element(locator)
+
+    def wait_for_angular(self, element: str = "body"):
+        return super().wait_for_angular(element)
+
+    @property
     def expander_locator(self):
         return By.CSS_SELECTOR, '.dynatree-node > .fa-angle'
 
@@ -269,15 +292,21 @@ class OverviewPage(PluginPage):
         locator = (By.CSS_SELECTOR, '.active a[ng-href="#/{}/overview"]'.format(PLUGIN_NAME))
         WebDriverWait(selenium, 30).until(EC.presence_of_element_located(locator))
 
-    @property
-    def entities_tab(self) -> WebElement:
-        locator = (By.CSS_SELECTOR, 'a[ng-href="#/{}/list"]'.format(PLUGIN_NAME))
-        return self.wait_locate_visible_element(locator)
 
-    @property
-    def overview_tab(self) -> WebElement:
-        locator = (By.CSS_SELECTOR, 'a[ng-href="#/{}/overview"]'.format(PLUGIN_NAME))
-        return self.wait_locate_visible_element(locator)
+class EntitiesPage(PluginPage):
+    def __init__(self, selenium: webdriver.Remote):
+        super().__init__(selenium)
+        self.node_count = 17
+
+    @classmethod
+    def url(cls, base_url):
+        return '{}/{}/links'.format(base_url, PLUGIN_NAME)
+
+    @classmethod
+    def wait(cls, selenium: webdriver.Remote):
+        # wait for Entities link in the top bar to be active
+        locator = (By.CSS_SELECTOR, '.active a[ng-href="#/{}/links"]'.format(PLUGIN_NAME))
+        WebDriverWait(selenium, 30).until(EC.presence_of_element_located(locator))
 
 
 # TODO: the order of predecessors matters here; the class hierarchy probably needs changing
@@ -295,18 +324,20 @@ class StandaloneOverviewPage(StandalonePluginPage, OverviewPage):
         locator = (By.CSS_SELECTOR, 'li.active > a[ng-href="#!/overview"]')
         WebDriverWait(selenium, 30).until(EC.presence_of_element_located(locator))
 
-    @property
-    def entities_tab(self) -> WebElement:
-        locator = (By.CSS_SELECTOR, 'li > a[ng-href="#!/list"]')
-        return self.wait_locate_visible_element(locator)
 
-    @property
-    def overview_tab(self) -> WebElement:
-        locator = (By.CSS_SELECTOR, 'li > a[ng-href="#!/overview"]')
-        return self.wait_locate_visible_element(locator)
+class StandaloneEntitiesPage(StandalonePluginPage, EntitiesPage):
+    def __init__(self, selenium: webdriver.Remote):
+        super().__init__(selenium)
 
-    def wait_for_angular(self, element: str = "body"):
-        return super().wait_for_angular(element)
+    @classmethod
+    def url(cls, base_url: str) -> str:
+        return '{}/#!/list'.format(base_url)
+
+    @classmethod
+    def wait(cls, selenium: webdriver.Remote):
+        # wait for Overview link in the top bar to be active
+        locator = (By.CSS_SELECTOR, 'li.active > a[ng-href="#!/list"]')
+        WebDriverWait(selenium, 30).until(EC.presence_of_element_located(locator))
 
 
 class StandaloneConnectPage(ConnectPage):
@@ -323,6 +354,7 @@ class StandaloneConnectPage(ConnectPage):
         locator = (By.CSS_SELECTOR, 'a[ng-href="#!/connect"]')
         WebDriverWait(selenium, 30).until(EC.presence_of_element_located(locator))
 
+    # TODO: again this is bad class hierarchy
     def wait_for_angular(self, element: str = "body"):
         return super().wait_for_angular(element)
 
@@ -331,6 +363,11 @@ class PageObjectContainer(object, metaclass=ABCMeta):
     @property
     @abstractmethod
     def overview_page(self) -> Type[OverviewPage]:
+        pass
+
+    @property
+    @abstractmethod
+    def entities_page(self) -> Type[EntitiesPage]:
         pass
 
     @property
@@ -350,6 +387,10 @@ class HawtioPageObjectContainer(PageObjectContainer):
         return OverviewPage
 
     @property
+    def entities_page(self):
+        return EntitiesPage
+
+    @property
     def connect_page(self):
         return ConnectPage
 
@@ -362,6 +403,10 @@ class StandalonePageObjectContainer(PageObjectContainer):
     @property
     def overview_page(self):
         return StandaloneOverviewPage
+
+    @property
+    def entities_page(self):
+        return StandaloneEntitiesPage
 
     @property
     def connect_page(self):
