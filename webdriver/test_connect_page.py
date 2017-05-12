@@ -137,7 +137,7 @@ class TestConnectPage(TestCase):
     @pytest.mark.nondestructive
     @pytest.mark.parametrize("when_correct_details", [
         lambda self, page: self.when_correct_details(page),
-        # lambda self, page: page.connect_to(self.console_ip)  # TODO: xfail because of DISPATCH-747
+        lambda self, page: page.connect_to(self.console_ip),
     ])
     def test_correct_details(self, when_correct_details):
         self.test_name = 'test_correct_details'
