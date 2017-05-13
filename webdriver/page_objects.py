@@ -220,7 +220,6 @@ class PluginPage(PageObject):
                 node = self.retry_on_exception(NoSuchElementException, lambda: expander.find_element(By.XPATH, './..'))
                 if self.is_expanded(node):
                     continue
-                WebDriverWait(self.selenium, 10).until(lambda _: expander.is_displayed())
                 self.wait_for_frameworks()
                 expander.click()
                 self.wait_for_frameworks()
