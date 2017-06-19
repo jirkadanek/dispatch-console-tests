@@ -17,16 +17,16 @@
 # under the License.
 #
 
-from typing import List
-
 import pytest
 from selenium import webdriver
 
 from webdriver.page_objects import PageObjectContainer
 from .test_connect_page import TestCase
 
+from .page_objects import EntitiesPage
 
-class TestOverviewPage(TestCase):
+
+class TestEntitiesPage(TestCase):
     @pytest.fixture(autouse=True)
     def setup(self, base_url: str, console_ip: str, pages: PageObjectContainer, selenium: webdriver.Remote):
         self.base_url = base_url
@@ -34,28 +34,29 @@ class TestOverviewPage(TestCase):
         self.console_port = 5673
         self.ConnectPage = pages.connect_page
         self.OverviewPage = pages.overview_page
+        self.EntitiesPage = pages.entities_page
         self.selenium = selenium
         self.test_name = None
         return self
 
     @pytest.mark.nondestructive
-    def test_open_overview_page(self):
-        page = self.given_overview_page()
+    def test_open_entities_page(self):
+        page = self.given_entities_page()
 
     @pytest.mark.nondestructive
     @pytest.mark.verifies(issue='DISPATCH-434')  # Remember all entities expanded on overview and entities pages
     def test_expanding_tree(self):
         self.test_name = 'test_expanding_tree'
-        page = self.given_overview_page()
+        page = self.given_entities_page()
 
         page.expand_tree(page.node_count)
         self.take_screenshot("10")
 
-        page = self.when_navigate_to_entities_page_and_back(page)
+        page = self.when_navigate_to_overview_page_and_back(page)
         assert len(page.expanded_nodes) == page.node_count
         self.take_screenshot("20")
 
-    def given_overview_page(self):
+    def given_entities_page(self) -> EntitiesPage:
         connect = self.ConnectPage.open(self.base_url, self.selenium)
         connect.wait_for_frameworks()
         self.ConnectPage.wait(self.selenium)
@@ -64,14 +65,16 @@ class TestOverviewPage(TestCase):
         connect.connect_to(self.console_ip, self.console_port)
         connect.connect_button.click()
         self.OverviewPage.wait(self.selenium)
-        overview = self.OverviewPage(self.selenium)
+        self.OverviewPage(self.selenium).entities_tab.click()
+        self.EntitiesPage.wait(self.selenium)
+        overview = self.EntitiesPage(self.selenium)
         overview.wait_for_frameworks()
         return overview
 
-    def when_navigate_to_entities_page_and_back(self, page):
-        page.entities_tab.click()
-        page.wait_for_frameworks()
+    def when_navigate_to_overview_page_and_back(self, page):
         page.overview_tab.click()
-        self.OverviewPage.wait(self.selenium)
         page.wait_for_frameworks()
-        return self.OverviewPage(self.selenium)
+        page.entities_tab.click()
+        self.EntitiesPage.wait(self.selenium)
+        page.wait_for_frameworks()
+        return self.EntitiesPage(self.selenium)
