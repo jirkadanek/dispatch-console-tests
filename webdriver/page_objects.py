@@ -217,6 +217,7 @@ class PluginPage(PageObject):
         def loop():
             self.wait_for_frameworks()
             for expander in self.expanders:  # type: WebElement
+                _ = expander.location_once_scrolled_into_view  # this is supposed to scroll the element into view
                 node = self.retry_on_exception(NoSuchElementException, lambda: expander.find_element(By.XPATH, './..'))
                 if self.is_expanded(node):
                     continue
