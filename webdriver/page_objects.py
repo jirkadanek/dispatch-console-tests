@@ -22,7 +22,7 @@ import time
 from unittest.mock import Mock
 
 import pytest
-from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, WebDriverException
 from typing import Type, List
 
 from selenium import webdriver
@@ -40,7 +40,7 @@ class PageObject(object):
         self.selenium = selenium
 
     def wait_locate_visible_element(self, locator) -> WebElement:
-        timeout = 10
+        timeout = 20
         return WebDriverWait(self.selenium, timeout).until(EC.presence_of_element_located(locator))
 
     def wait_for_frameworks(self):
@@ -93,12 +93,11 @@ try {
   return false;
 }
 """
-        self.wait_for(lambda: self.selenium.execute_script(script))
+        self.wait_for(lambda: self.selenium.execute_script(script), timeout=20)
         self.wait_for_angular()
 
     @staticmethod
-    def wait_for(condition):
-        timeout = 10
+    def wait_for(condition, timeout=10):
         t = 0
         d = 0.3
         while True:
@@ -217,6 +216,7 @@ class PluginPage(PageObject):
         def loop():
             self.wait_for_frameworks()
             for expander in self.expanders:  # type: WebElement
+                _ = expander.location_once_scrolled_into_view  # this is supposed to scroll the element into view
                 node = self.retry_on_exception(NoSuchElementException, lambda: expander.find_element(By.XPATH, './..'))
                 if self.is_expanded(node):
                     continue
@@ -244,7 +244,7 @@ class PluginPage(PageObject):
     def expanded_nodes(self) -> List[WebElement]:
         return self.selenium.find_elements(By.CSS_SELECTOR, '.dynatree-node.dynatree-expanded')
 
-    def retry_on_exception(self, exception, test_function, retries=50):
+    def retry_on_exception(self, exception, test_function, retries=100):
         for _ in range(retries):
             try:
                 return test_function()

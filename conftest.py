@@ -17,6 +17,8 @@
 # under the License.
 #
 
+from typing import Any, Dict
+
 import pytest
 from _pytest.fixtures import FixtureRequest
 from selenium import webdriver
@@ -34,16 +36,22 @@ def pytest_addoption(parser):
                      help="type of console, either hawtio or stand-alone")
 
 
+@pytest.fixture(scope='session')
+def session_capabilities(session_capabilities: Dict[str, Any]):
+    if 'browserName' in session_capabilities and session_capabilities['browserName'] == 'internet explorer':
+        session_capabilities['ie.ensureCleanSession'] = True
+    return session_capabilities
+
+
 @pytest.fixture
 def selenium(request: FixtureRequest) -> webdriver.Remote:
     if request.config.getoption('--local-chrome'):
         driver = initialize_local_chrome()
         request.addfinalizer(lambda: deinitialize_selenium(driver))
         return driver
+
     driver = request.getfixturevalue('selenium')  # type: webdriver.Remote
-    yield driver
-    # https://github.com/SeleniumHQ/docker-selenium/issues/87#issuecomment-286231268
-    driver.close()
+    return driver
 
 
 @pytest.fixture(scope="module")
