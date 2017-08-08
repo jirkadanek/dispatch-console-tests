@@ -51,11 +51,7 @@ def selenium(request: FixtureRequest) -> webdriver.Remote:
         return driver
 
     driver = request.getfixturevalue('selenium')  # type: webdriver.Remote
-    yield driver
-    # https://github.com/SeleniumHQ/docker-selenium/issues/87#issuecomment-286231268
-    # todo: apparently, pytest-selenium takes care of this and double call causes me an exception
-    #  https://github.com/mozilla/geckodriver/issues/732
-    # driver.close()
+    return driver
 
 
 @pytest.fixture(scope="module")
