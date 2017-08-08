@@ -40,7 +40,7 @@ class PageObject(object):
         self.selenium = selenium
 
     def wait_locate_visible_element(self, locator) -> WebElement:
-        timeout = 10
+        timeout = 20
         return WebDriverWait(self.selenium, timeout).until(EC.presence_of_element_located(locator))
 
     def wait_for_frameworks(self):
